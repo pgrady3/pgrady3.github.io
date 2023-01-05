@@ -94,15 +94,18 @@
               {%- endif -%}
               {%- endif -%}
               {% endfor -%}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ '/assets/PGradyCV.pdf' | relative_url }}">CV</a>
+              </li>
               {%- if site.enable_darkmode %}
 
               <!-- Toogle theme mode -->
-              <li class="toggle-container">
-                <button id="light-toggle" title="Change theme">
-                  <i class="fas fa-moon"></i>
-                  <i class="fas fa-sun"></i>
-                </button>
-              </li>
+<!--              <li class="toggle-container">-->
+<!--                <button id="light-toggle" title="Change theme">-->
+<!--                  <i class="fas fa-moon"></i>-->
+<!--                  <i class="fas fa-sun"></i>-->
+<!--                </button>-->
+<!--              </li>-->
               {%- endif %}
             </ul>
           </div>

@@ -22,4 +22,4 @@ Hi! My name is Patrick; I'm currently a PhD student in the Robotics department a
 
 Before coming to Georgia Tech, I did my undergrad at Duke in computer science and electrical engineering. I got to lead [Duke Electric Vehicles](http://www.duke-ev.org/), a team of undergraduates building ultra-efficient cars. During my tenure as president, we set the world record for [Most Fuel-Efficient Vehicle](https://pratt.duke.edu/about/news/duke-students-break-guinness-world-record-fuel-efficiency) at 14,573 MPG, and [Most Efficient Electric Vehicle](https://pratt.duke.edu/about/news/duke-student-team-wins-second-guinness-world-record-vehicle-efficiency) at 27,482 MPGe. [Check out this page](/cars/) for more info.
 
-In my free time, I like to fly.
+In my free time, I like to fly gliders. These are a type of airplane without an engine which use thermals and mountain wave to stay aloft. My longest flight is 9 hours and covered 500 miles, and I hold 11 Georgia state records for soaring. It's a lot of fun! I also enjoy photography and building things with my hands.

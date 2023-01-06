@@ -3,7 +3,7 @@ layout: page
 permalink: /cars/
 title: cars
 description: I led a team that build super efficient cars. We have some world records too!
-nav: true
+nav: false
 nav_order: 2
 ---
 

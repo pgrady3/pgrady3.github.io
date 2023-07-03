@@ -73,7 +73,7 @@ While I had graduated at this point, based on the performance we had seen at the
     Maxwell during wind tunnel testing.
 </div>
 
-Over the summer, I led a major push to quantify the energy losses in the vehicle. It's obvious that there are various sources of drag, such as air resistance, motor losses, and wheel bearing drag. However, what is the significance of each one? What should we as a team invest effort into improving? How close is our real-world implementation to the theoretical efficiency stated on the datasheets? These are all critical questions, and if we were to break a world record, we needed to understand exactly where each Joule of energy went.
+Over the summer of 2018, I led a major push to quantify the energy losses in the vehicle. It's obvious that there are various sources of drag, such as air resistance, motor losses, and wheel bearing drag. However, what is the significance of each one? What should we as a team invest effort into improving? How close is our real-world implementation to the theoretical efficiency stated on the datasheets? These are all critical questions, and if we were to break a world record, we needed to understand exactly where each Joule of energy went.
 
 We decided to attack this problem by building testing rigs to measure each part of the vehicle in isolation, then perform real-world track tests. Ideally, we could make the bottom-up efficiency estimate and top-down on-track performance match closely. By having setups to measure each component's performance on the bench, we could also get much more repeatable measurements. For example, we found that the aerodynamic drag from the wheel spokes spinning inside the car was 150 milliwatts. An unacceptable amount!
 
@@ -86,12 +86,31 @@ We decided to attack this problem by building testing rigs to measure each part 
     Some of the many testing setups used to evaluate the car's performance in isolation. From right to left: wind tunnel testing, measuring wheel aerodynamic drag, mapping the course with centimeter precision, measuring the overall powertrain efficiency, calibrating tire toe angle, measuring rolling resistance.
 </div>
 
+Our testing effort allowed us to build an accurate model of vehicle performance, shown below. These [results were published](/assets/pdf/VPPC2019.pdf) in VPPC 2019. Understanding the main sources of energy losses allowed us to focus our efforts on improving the most important parts of the vehicle.
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0 text-center">
-        {% include figure.html path="assets/img/pie.png" title="Pie chart of losses" class="img-fluid rounded z-depth-1" %}
+        {% include figure.html path="assets/img/pie.png" title="Pie chart of losses" class="img-fluid rounded z-depth-1"  width="60%" %}
     </div>
 </div>
 <div class="caption">
-    The totalized losses of the vehicle
+    The vehicle energy losses summarized in a simple pie chart.
 </div>
+
+As our team worked on the car, we incrementally improved it's performance. In particular, significant gains were achieved in managing the fuel cell to operate in it's most efficient range and modifying the tires to minimize rolling resistance. We also developed analysis framework to understand when the car performed worse than our model.
+
+Our first world record attempt occured on July 14th, 2018. We attempted the record three times, but due to a variety of technical problems, the car didn't complete the course during the first two attempts due to an overheating fuel cell and issues with the motor controller. On the final attempt, one of the vehicle's tires leaked, resulting in a score 20% lower than prior attempts.
+
+For the next week, our team worked on ironing out bugs in the car for a second attempt. On July 21st, 2018 we had our second attempt on a cloudy, cool morning. We broke the record on our first attempt, but kept on pushing to increase efficiency even further. Our next two attempts pushed the record higher and higher. In our final attempt, our vehicle covered 13.629 km at an average speed of 24.29 kph using only 0.6016 grams of hydrogen. Our overall efficiency was 14,573 MPGe, setting a new world record!
+
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0 text-center">
+        {% include figure.html path="assets/img/maxwell_wr.jpg" title="Maxwell during the world record attempt" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+<div class="caption">
+    Maxwell during the world record attempt.
+</div>
+
+Description of second world record in progress...

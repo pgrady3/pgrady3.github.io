@@ -15,7 +15,7 @@ nav_order: 3
 </div>
 
 
-Gliders are highly efficient airplanes with no engine. An airplane's efficiency can be measured by its [glide ratio](https://en.wikipedia.org/wiki/Lift-to-drag_ratio). For example, an airliner may have a glide ratio of 16:1, meaning with 1 mile of altitude, it can glide 16 miles sideways. Gliders are optimized to be as aerodynamic as possible, and have glide ratios up to 60:1. However, since they have no engine, glider pilots must be masters at finding naturally rising air, which allows them to gain altitude using the power of the atmosphere. In areas with no mountains, glider pilots use thermals to stay aloft. Thermals are columns of rising air formed by convection, and pilots circle tightly in them to gain altitude. Skilled pilots participate in races, where up to 50 airplanes fly simulaneously around a 200-300 mile course as quickly as possible.
+Gliders are highly aerodynamic airplanes with no engine. An airplane's efficiency can be measured by its [glide ratio](https://en.wikipedia.org/wiki/Lift-to-drag_ratio). For example, an airliner may have a glide ratio of 16:1, meaning with 1 mile of altitude it can glide 16 miles horizontally. Gliders are optimized to have as little drag as possible, and have glide ratios up to 60:1. However, since they have no engine, glider pilots must be masters at finding naturally rising air, which allows them to gain altitude using the power of the atmosphere. In areas without mountains, gliders use thermals to stay aloft, which are columns of rising air formed by convection. Pilots jump from thermal to thermal, and can stay up for hours while covering great distances. Skilled pilots participate in races, where up to 50 airplanes fly simulaneously around a 200-300 mile course as quickly as possible.
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0 text-center">
@@ -23,7 +23,7 @@ Gliders are highly efficient airplanes with no engine. An airplane's efficiency 
     </div>
 </div>
 <div class="caption">
-    I took this shot while in another glider in the same thermal. Stabilized in post.
+    A Ventus 2 while thermalling. This was shot while flying another glider and stabilized in post-production.
 </div>
 
 I got my glider pilot's license in high school. Since then, I've enjoyed flying gliders at an increasingly competitive level. My longest flight is 9.5 hours, and the furthest I've flown is 500 miles, from Califonia to Idaho. I've climbed to 18,000 ft, which requires wearing supplemental oxygen systems. I've also set 11 Georgia soaring records for speed and distance.
@@ -37,11 +37,11 @@ I've also worked on developing inertial [variometers](https://en.wikipedia.org/w
     </div>
 </div>
 <div class="caption">
-    An ASG-32 in wave over California.
+    The instrument panel of an ASG-32 at 15,000 ft in mountain wave over California.
 </div>
 
 
-More recently, I got my license to fly powered aircraft. These machines are obviously a bit easier to keep in the air, but present a different set of challenges. Powered planes require less stick-and-rudder skill and tactical planning, but the airplane is more complex requiring a deeper technical knowledge and they often fly in complex airspace requiring coordination with air traffic control. I've pulled at most +4.5 and -2.0 Gs in power planes, but I hope to increase these numbers dramatically.
+More recently, I got my license to fly powered aircraft. I've spent most of my time in the Cessna 172. These machines are obviously easier to keep in the air, but present a different set of challenges from gliding. I've pulled at most +4.5 and -2.0 Gs in power planes, but I hope to increase these numbers dramatically.
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">

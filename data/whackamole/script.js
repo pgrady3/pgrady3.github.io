@@ -8,6 +8,7 @@ let score = 0;
 
 const timeCount = document.getElementById('time-count');
 const scoreCount = document.getElementById('score-count');
+const startPrompt = document.getElementById('startprompt');
 
 gameContainer.addEventListener('click', function(e){
     if(e.target.classList.contains('mole-clicked')){
@@ -22,13 +23,15 @@ gameContainer.addEventListener('click', function(e){
         textEl.innerHTML = "whack!";
         bushElem.appendChild(textEl);
 
+        moleItem.classList.remove('mole-appear');
+
         setTimeout(() => {
             textEl.remove();
-            moleItem.classList.remove('mole-appear');
         }, 300);
     }
 
     if(countDown === 0) {
+        startPrompt.style.display = "none";
         resetGames();
     }
 })
@@ -43,19 +46,20 @@ function showMole(){
         clearInterval(startGame);
         clearInterval(startTime);
         timeCount.innerHTML = "0";
+        startPrompt.style.display = "";
 
         for (mole of allMoleItems) {
             mole.classList.remove('mole-appear');
         }
     }
-    let moleToAppear = allMoleItems[getRandomValue()].querySelector('.mole');
+    let moleToAppear = allMoleItems[getRandomValue(0, allMoleItems.length)].querySelector('.mole');
     moleToAppear.classList.add('mole-appear');
     hideMole(moleToAppear);
 
 }
 
-function getRandomValue(){
-    let rand = Math.random() * allMoleItems.length;
+function getRandomValue(min, max){
+    let rand = Math.random() * (max - min) + min;
     return Math.floor(rand);
 }
 
@@ -71,6 +75,7 @@ function resetGames(){
     startGame, startTime, countDown = 20;
 
     timeCount.innerHTML = countDown;
+    scoreCount.innerHTML = score;
     countDown--;
 
     // total game time is 20 seconds

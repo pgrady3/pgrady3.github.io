@@ -3,6 +3,7 @@ const gameContainer = document.querySelector('.container');
 const allMoleItems = document.querySelectorAll('.item');
 let startGame;
 let startTime;
+let allowRestart = true;
 let countDown = 0;
 let score = 0;
 
@@ -30,7 +31,7 @@ gameContainer.addEventListener('click', function(e){
         }, 300);
     }
 
-    if(countDown === 0) {
+    if(countDown === 0 && allowRestart) {
         startPrompt.style.display = "none";
         resetGames();
     }
@@ -51,6 +52,11 @@ function showMole(){
         for (mole of allMoleItems) {
             mole.classList.remove('mole-appear');
         }
+
+        allowRestart = false;
+        setTimeout(() => {
+            allowRestart = true;
+        }, 3000);
     }
     let moleToAppear = allMoleItems[getRandomValue(0, allMoleItems.length)].querySelector('.mole');
     moleToAppear.classList.add('mole-appear');
@@ -72,16 +78,17 @@ function hideMole(moleItem){
 
 function resetGames(){
     score = 0;
-    startGame, startTime, countDown = 20;
+    startGame, startTime, countDown = 3;
+
 
     timeCount.innerHTML = countDown;
     scoreCount.innerHTML = score;
-    countDown--;
+    //countDown--;
 
     // total game time is 20 seconds
     startTime = setInterval(() => {
-        timeCount.innerHTML = countDown;
         countDown--;
+        timeCount.innerHTML = countDown;
     }, 1000);
 
     startGame = setInterval(() => {

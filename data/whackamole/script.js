@@ -53,7 +53,7 @@ function showMole(){
 
     moleTimer = setTimeout(() => {
         showMole();
-    }, getRandomValue(100, 2000));
+    }, getRandomValue(200, 2200));
 
 }
 
@@ -66,7 +66,7 @@ function getRandomValue(min, max){
 function hideMole(moleItem){
     setTimeout(() => {
         moleItem.classList.remove('mole-appear');
-    }, 2000);
+    }, 2600);
 }
 
 function resetGames(){

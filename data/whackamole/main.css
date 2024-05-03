@@ -29,6 +29,8 @@ body{
     z-index: 100; /* Specify a stack order in case you're using a different order for other elements */
     cursor: pointer; /* Add a pointer on hover */
     color: #fff;
+    pointer-events: none;
+    user-select: none;
 }
 .container{
     max-width: 800px;

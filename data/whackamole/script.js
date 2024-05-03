@@ -1,7 +1,7 @@
 
 const gameContainer = document.querySelector('.container');
 const allMoleItems = document.querySelectorAll('.item');
-let startGame;
+let moleTimer;
 let startTime;
 let allowRestart = true;
 let countDown = 0;
@@ -43,24 +43,17 @@ gameContainer.addEventListener('click', function(e){
 
 // shows mole
 function showMole(){
-    if(countDown <= 0){
-        clearInterval(startGame);
-        clearInterval(startTime);
-        timeCount.innerHTML = "0";
-        startPrompt.style.display = "";
-
-        for (mole of allMoleItems) {
-            mole.classList.remove('mole-appear');
-        }
-
-        allowRestart = false;
-        setTimeout(() => {
-            allowRestart = true;
-        }, 3000);
+    if (countDown <= 0) {
+        return;
     }
+
     let moleToAppear = allMoleItems[getRandomValue(0, allMoleItems.length)].querySelector('.mole');
     moleToAppear.classList.add('mole-appear');
     hideMole(moleToAppear);
+
+    moleTimer = setTimeout(() => {
+        showMole();
+    }, getRandomValue(100, 2000));
 
 }
 
@@ -78,7 +71,7 @@ function hideMole(moleItem){
 
 function resetGames(){
     score = 0;
-    startGame, startTime, countDown = 3;
+    moleTimer, startTime, countDown = 20;
 
 
     timeCount.innerHTML = countDown;
@@ -89,9 +82,29 @@ function resetGames(){
     startTime = setInterval(() => {
         countDown--;
         timeCount.innerHTML = countDown;
+
+        if(countDown <= 0){
+            clearInterval(moleTimer);
+            clearInterval(startTime);
+            timeCount.innerHTML = "0";
+            startPrompt.style.display = "";
+
+            for (const mole of allMoleItems) {
+                mole.classList.remove('mole-appear');
+            }
+
+            allowRestart = false;
+            setTimeout(() => {
+                allowRestart = true;
+            }, 3000);
+
+            return;
+        }
     }, 1000);
 
-    startGame = setInterval(() => {
-        showMole();
-    }, 1000);
+    showMole();
+
+    // startGame = setInterval(() => {
+    //     showMole();
+    // }, 1000);
 }

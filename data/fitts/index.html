@@ -3,7 +3,7 @@
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title>Visualising Fitts's Law</title>
+	<title>Fitts's Test</title>
 	<script type="text/javascript" src="http://simonwallner.at/ext/fitts/d3/d3.v2.js"></script>
 	<script type="text/javascript" src="http://simonwallner.at/ext/fitts/d3/lib/jquery/jquery.min.js"></script>
 	<script type="text/javascript" src="http://simonwallner.at/ext/fitts/d3/lib/jquery-ui/jquery-ui.min.js"></script>
@@ -16,10 +16,18 @@
 </head>
 
 <body>
-	<div id="test-area" class="sans"></div>
-	<p class="caption">
-		Click the red circles quickly and accurately.
-	</p>
+	<div class="start-screen" id="start-screen">
+
+        <div class="start-controls">
+            <button id="start-button">Start</button>
+            <p id="start-text" style="font-size: 2rem"></p>
+        </div>
+    </div>
+
+	<div id="experience-screen" class="experience-screen" style="display: none;">
+		<div id="timer" class="timer"></div>
+		<div id="test-area" class="sans"></div>
+    </div>
 
 	<script type="text/javascript" src="fitts-law.js"></script>
 

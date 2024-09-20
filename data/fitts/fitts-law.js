@@ -27,6 +27,13 @@ function makeDimension(width, height, top, right, bottom, left) {
 var testDimension = makeDimension(620, 400, 30, 30, 30, 30);
 
 var MAX_SPEED = 2; // pixel/ms
+var elapsed = 0;
+
+const experienceScreen = document.getElementById('experience-screen');
+const startScreen = document.getElementById('start-screen');
+const startButton = document.getElementById('start-button');
+const timer = document.getElementById('timer');
+const startText = document.getElementById('start-text');
 
 function rHit(r, rTarget) {
 	return ((plotHitsDimension.innerWidth / 2) / rTarget) * r;
@@ -61,7 +68,6 @@ var fittsTest = {
 	generateTarget: function() {
 		this.target = this.isoPositions[this.currentPosition];
 		this.target.distance = this.isoParams.distance;
-		this.currentPosition = (this.currentPosition + Math.ceil(this.isoPositions.length/2)) % this.isoPositions.length;
 
 		var target = testAreaSVG.selectAll('#target').data([this.target]);
 
@@ -79,15 +85,9 @@ var fittsTest = {
 
 		target.transition()
 				.call(insert);
-
-
-		this.active = true;
 	},
 
 	updateISOCircles: function() {
-		console.log('updateISOCircles');
-		this.currentCount = 0;
-
 		this.generateISOPositions(this.isoParams.num,
 			this.isoParams.distance,
 			this.isoParams.width);
@@ -113,9 +113,8 @@ var fittsTest = {
 				.attr('r', 0)
 				.remove();
 
-		this.currentPosition = 0;
+		// this.currentPosition = 0;
 		this.generateTarget();
-		this.active = false;
 	},
 
 	generateISOPositions: function(num, d, w) {
@@ -133,28 +132,29 @@ var fittsTest = {
 		testAreaSVG.selectAll('#target').data([])
 			.exit()
 				.remove();
-
-		this.active = false;
 	},
 
 	mouseClicked: function(x, y) {
 		if (distance({x: x, y: y}, this.target) < (this.target.w / 2)) {
+			if (!this.active) {
+				console.log('start active');
+				startTimer();
+				this.active = true;
+			}
+
+			this.currentCount++;
+			this.currentPosition = (this.currentPosition + Math.ceil(this.isoPositions.length/2)) % this.isoPositions.length;
 			this.removeTarget();
+			this.generateTarget();
 
-			if (this.isoParams.randomize && this.currentCount >= this.isoPositions.length - 1) {
-				this.randomizeParams();
-				this.currentCount = 0;
-				this.currentPosition = 0;
-				this.miss = 0;
-				this.updateISOCircles;
-				this.generateTarget();
+			if (this.currentCount === 4) {
 				this.active = false;
-			}
-			else {
-				this.currentCount++;
-				this.generateTarget();
+				endExperience();
 			}
 
+			if (this.currentPosition === 0) {
+				this.advanceParams();
+			}
 
 			this.last = {x: x, y: y, t: (new Date).getTime()};
 			this.start = this.last;
@@ -169,6 +169,11 @@ var fittsTest = {
 			// skip if the mouse did actually not move
 			// that should practically never happen...
 			if (x == this.last.x && y == this.last.y) {
+				return;
+			}
+
+			// Skip for the first frame (we dont have last frame)
+			if (Object.keys(this.last).length === 0) {
 				return;
 			}
 
@@ -197,7 +202,7 @@ var fittsTest = {
 		}
 	},
 
-	randomizeParams: function() {
+	advanceParams: function() {
 		this.isoParams.distance = Math.floor(randomAB(this.isoLimits.minD, this.isoLimits.maxD));
 		this.isoParams.width = Math.floor(randomAB(this.isoLimits.minW, this.isoLimits.maxW));
 
@@ -251,7 +256,45 @@ var testAreaSVG = d3.select('#test-area').append('svg')
 	.call(bgRect, testDimension);
 
 
+function startTimer() {
+	let startTime = null;
+	console.log('start timer');
 
-// init code
-fittsTest.active = false;
-fittsTest.updateISOCircles();
+	function loop(timestamp) {
+		if (!startTime)
+			startTime = timestamp;
+
+		elapsed = timestamp - startTime;
+		timer.innerText = (elapsed / 1000).toFixed(2);
+		if (!fittsTest.active) {
+			console.log('stop timer');
+			return;
+		}
+		window.requestAnimationFrame(loop);
+	}
+	window.requestAnimationFrame(loop);
+}
+
+function startExperience() {
+	startScreen.style.display = "none";
+	experienceScreen.style.display = "";
+
+	fittsTest.updateISOCircles();
+}
+
+function endExperience() {
+	experienceScreen.style.display = "none";
+	startScreen.style.display = "";
+	startText.innerText = `${(elapsed / 1000).toFixed(2)} seconds`;
+
+	// init code
+	fittsTest.currentPosition = 0,
+	fittsTest.currentCount = 0,
+	fittsTest.miss = 0,
+	fittsTest.active = false;
+	timer.innerText = "";
+	testAreaSVG.selectAll('line').remove();
+}
+
+
+startButton.addEventListener('click', startExperience);

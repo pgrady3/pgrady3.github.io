@@ -1,9 +1,8 @@
 @import url("http://simonwallner.at/ext/fitts/d3/lib/jquery-ui/jquery-ui.css");
 
 body {
-	background-color: #ededed;
 	font-size: 16px;
-	font-family: 'Ovo', helvetica, sans-serif;
+	font-family: 'Open Sans';
 	font-weight: 400;
 }
 
@@ -34,18 +33,14 @@ h1 strong {
 }
 
 strong {
-/*	font-family: 'Open Sans';*/
+	font-family: 'Open Sans';
 	font-weight: 600;
-/*	font-size: 0.91em;*/
+	font-size: 0.91em;
 }
 .sans {
 	font-family: 'Open Sans';
 	font-weight: 700;
 	font-size: 0.8em;
-}
-
-div.2ndRow {
-	margin-top: 20px;
 }
 
 p.caption {
@@ -71,24 +66,6 @@ hr {
 	height: 1px;
 	background-color: #ccc;
 	margin: 15px;
-}
-
-#dataSets .active {
-	color: #fff;
-	background-image: url('tile16.png');
-}
-
-#dataSets div {
-	border-radius: 4px;
-	margin: 2px;
-	padding: 2px 8px 2px 8px;
-}
-#dataSets button {
-	margin-left: 120px;
-}
-
-#sliderRadius, #sliderDistance {
-	margin-top: -10px;
 }
 
 div.msg {
@@ -123,7 +100,7 @@ line {
 }
 
 .back {
-	fill: #fff;
+	fill: #ededed;
 	stroke: #000;
 	stroke-width: 2px;
   	shape-rendering: crispEdges;
@@ -145,9 +122,44 @@ path {
   stroke: #000;
 }
 
-
-
 circle.iso {
-	fill: #ddd;
+	fill: #cacaca;
 	opacity: 0.5;
+}
+
+.start-screen, .experience-screen {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.start-screen button,
+.start-screen select,
+.start-screen p {
+	font-size: 4rem;
+	padding: 1.5rem 1.75rem;
+	text-align: center;
+	/* font-family: sans-serif; */
+}
+
+.start-screen button {
+	margin-bottom: 1rem;
+}
+
+.start-controls {
+	display: flex;
+	flex-direction: column;
+}
+
+.timer {
+	position: absolute;
+	color: #dddddd;
+	font-size: 4rem;
+	top: 1rem;
+	left: 1rem;
 }

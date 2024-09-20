@@ -147,13 +147,14 @@ var fittsTest = {
 			this.removeTarget();
 			this.generateTarget();
 
-			if (this.currentCount === 4) {
-				this.active = false;
-				endExperience();
-			}
-
+			// If we've gone around the whole circle
 			if (this.currentPosition === 0) {
 				this.advanceParams();
+			}
+
+			if (this.currentCount === 27) {
+				this.active = false;
+				endExperience();
 			}
 
 			this.last = {x: x, y: y, t: (new Date).getTime()};
@@ -203,8 +204,20 @@ var fittsTest = {
 	},
 
 	advanceParams: function() {
-		this.isoParams.distance = Math.floor(randomAB(this.isoLimits.minD, this.isoLimits.maxD));
-		this.isoParams.width = Math.floor(randomAB(this.isoLimits.minW, this.isoLimits.maxW));
+		console.log('advance params, current count: ' + this.currentCount);
+		if (this.currentCount >= 18) {
+			this.isoParams.distance = 250;
+			this.isoParams.width = 100;
+		} else if (this.currentCount >= 9) {
+			this.isoParams.distance = 150;
+			this.isoParams.width = 20;
+		} else {
+			this.isoParams.distance = 200;
+			this.isoParams.width = 50;
+		}
+
+		// this.isoParams.distance = Math.floor(randomAB(this.isoLimits.minD, this.isoLimits.maxD));
+		// this.isoParams.width = Math.floor(randomAB(this.isoLimits.minW, this.isoLimits.maxW));
 
 		this.updateISOCircles();
 	},
@@ -285,7 +298,7 @@ function startExperience() {
 function endExperience() {
 	experienceScreen.style.display = "none";
 	startScreen.style.display = "";
-	startText.innerText = `${(elapsed / 1000).toFixed(2)} seconds`;
+	startText.innerText = `${(elapsed / 1000).toFixed(2)} seconds\n` + startText.innerText;
 
 	// init code
 	fittsTest.currentPosition = 0,
@@ -293,7 +306,8 @@ function endExperience() {
 	fittsTest.miss = 0,
 	fittsTest.active = false;
 	timer.innerText = "";
-	testAreaSVG.selectAll('line').remove();
+	testAreaSVG.selectAll('line').remove(); // remove all cursor trails
+	fittsTest.advanceParams();
 }
 
 

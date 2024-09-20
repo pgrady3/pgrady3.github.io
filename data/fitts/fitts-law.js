@@ -210,7 +210,7 @@ var fittsTest = {
 			this.isoParams.width = 100;
 		} else if (this.currentCount >= 9) {
 			this.isoParams.distance = 150;
-			this.isoParams.width = 20;
+			this.isoParams.width = 30;
 		} else {
 			this.isoParams.distance = 200;
 			this.isoParams.width = 50;

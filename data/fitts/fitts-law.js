@@ -52,7 +52,6 @@ var fittsTest = {
 	isoLimits: {minD: 120, maxD: 300, minW:10 , maxW: 100},
 	isoParams: {num: 9, distance: 200, width: 50, randomize: true},
 
-	currentPath: [],
 	active: false,
 
 	data: [],
@@ -86,6 +85,7 @@ var fittsTest = {
 	},
 
 	updateISOCircles: function() {
+		console.log('updateISOCircles');
 		this.currentCount = 0;
 
 		this.generateISOPositions(this.isoParams.num,
@@ -116,10 +116,9 @@ var fittsTest = {
 		this.currentPosition = 0;
 		this.generateTarget();
 		this.active = false;
-},
+	},
 
 	generateISOPositions: function(num, d, w) {
-
 		this.isoPositions = [];
 
 		for (var i = 0; i < num; i++) {
@@ -130,20 +129,19 @@ var fittsTest = {
 	},
 
 	removeTarget: function() {
+		// Remove the currently active target
 		testAreaSVG.selectAll('#target').data([])
 			.exit()
 				.remove();
 
 		this.active = false;
-		this.currentPath = [];
 	},
 
 	mouseClicked: function(x, y) {
-
 		if (distance({x: x, y: y}, this.target) < (this.target.w / 2)) {
 			this.removeTarget();
 
-			if (this.isoParams.randomize && this.currentCount >= this.isoPositions.length) {
+			if (this.isoParams.randomize && this.currentCount >= this.isoPositions.length - 1) {
 				this.randomizeParams();
 				this.currentCount = 0;
 				this.currentPosition = 0;
@@ -160,7 +158,6 @@ var fittsTest = {
 
 			this.last = {x: x, y: y, t: (new Date).getTime()};
 			this.start = this.last;
-			this.currentPath.push(this.last);
 		}
 		else {
 			this.miss++;
@@ -176,7 +173,6 @@ var fittsTest = {
 			}
 
 			var newPoint = {x: x, y: y, t: (new Date).getTime()}
-			this.currentPath.push(newPoint)
 
 			var dt = newPoint.t - this.last.t;
 			var dist = distance(this.last, {x: x, y: y})
@@ -231,17 +227,6 @@ function distance(a, b) {
 	return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 }
 
-function sign(a) {
-	return a >=0 ? 1 : -1;
-}
-
-function rgb2Hex(r, g, b) {
-	return '#' +
-		clampInt(0, 255, r).toString(16) +
-		clampInt(0, 255, g).toString(16) +
-		clampInt(0, 255, b).toString(16);
-}
-
 function clampInt(lower, upper, x) {
 	return Math.min(upper, Math.max(lower, Math.floor(x)));
 }
@@ -268,7 +253,5 @@ var testAreaSVG = d3.select('#test-area').append('svg')
 
 
 // init code
-// should probably go somewhere else though.
 fittsTest.active = false;
-fittsTest.generateISOPositions(15, 150, 10);
 fittsTest.updateISOCircles();

@@ -1,15 +1,14 @@
-@import url("http://simonwallner.at/ext/fitts/d3/lib/jquery-ui/jquery-ui.css");
+@import url("jquery-ui.css");
 
 body {
 	font-size: 16px;
-	font-family: 'Open Sans';
+	font-family: sans-serif;
 	font-weight: 400;
 }
 
 h1 {
 	display: block;
 	font-size: 3em;
-	font-family: 'Open Sans';
 	font-weight: 300;
 	margin-bottom: 0.3333333em;
 	margin-top: 0.333333em;
@@ -18,7 +17,6 @@ h1 {
 h2 {
 	display: block;
 	font-size: 1.3333333em;
-	font-family: 'Open Sans';
 	font-weight: 700;
 	margin-bottom: 0.3333333em;
 	margin-top: 0.5em;
@@ -33,24 +31,20 @@ h1 strong {
 }
 
 strong {
-	font-family: 'Open Sans';
 	font-weight: 600;
 	font-size: 0.91em;
 }
 .sans {
-	font-family: 'Open Sans';
 	font-weight: 700;
 	font-size: 0.8em;
 }
 
 p.caption {
-	font-family: 'Open Sans';
 	font-weight: 700;
 	font-size: 0.8em;
 }
 
 p.note {
-	font-family: 'Open Sans';
 	font-weight: 600;
 	background-color: #EDE6B2;
 	border-radius: 15px;
@@ -81,7 +75,6 @@ div.msg {
 	color: #fff;
 	text-align: center;
 	vertical-align: center;
-	font-family: 'Open Sans';
 	font-weight: 700;
 }
 
@@ -144,7 +137,6 @@ circle.iso {
 	font-size: 4rem;
 	padding: 1.5rem 1.75rem;
 	text-align: center;
-	/* font-family: sans-serif; */
 }
 
 .start-screen button {

@@ -89,7 +89,7 @@ var effPositionX = d3.scale.linear()
 var effPositionY = d3.scale.linear()
 	.domain([-50, 50])
 	.range([positionEffectiveDimension.innerHeight, 0]);
-	
+
 var effSpeedX = d3.scale.linear()
 	.domain([0, MAX_TIME])
 	.range([0, speedEffectiveDimension.innerWidth])
@@ -111,28 +111,28 @@ var fittsTest = {
 	miss: 0,
 	isoLimits: {minD: 120, maxD: 300, minW:10 , maxW: 100},
 	isoParams: {num: 9, distance: 200, width: 50, randomize: true},
-	
+
 	currentPath: [],
 	active: false,
-	
+
 	data: [],
 	currentDataSet: 0,
 	dataCnt: 0,
-	
+
 	colour: d3.scale.category10(),
-	
+
 	sumID: 0,
 	sumTime: 0,
-	
+
 	updateTimeoutHandle: undefined,
-	
+
 	generateTarget: function() {
 		this.target = this.isoPositions[this.currentPosition];
 		this.target.distance = this.isoParams.distance;
 		this.currentPosition = (this.currentPosition + Math.ceil(this.isoPositions.length/2)) % this.isoPositions.length;
-		
+
 		var target = testAreaSVG.selectAll('#target').data([this.target]);
-		
+
 		var insert = function(d) {
 			d.attr('cx', function(d) { return d.x; })
 			.attr('cy', function(d) { return d.y; })
@@ -144,23 +144,23 @@ var fittsTest = {
 				.attr('id', 'target')
 				.style('fill', 'red')
 				.call(insert);
-									
+
 		target.transition()
 				.call(insert);
 
-		
+
 		this.active = true;
 	},
-	
+
 	updateISOCircles: function() {
 		this.currentCount = 0;
-		
+
 		this.generateISOPositions(this.isoParams.num,
 			this.isoParams.distance,
 			this.isoParams.width);
 
 		var circles = testAreaSVG.selectAll('circle').data(this.isoPositions);
-		
+
 		var insert = function(d) {
 			d.attr('cx', function(d) { return d.x; })
 			.attr('cy', function(d) { return d.y; })
@@ -171,22 +171,22 @@ var fittsTest = {
 			.append('circle')
 				.attr('class', 'iso')
 				.call(insert);
-									
+
 		circles.transition()
 			.call(insert);
-		
+
 		circles.exit()
 			.transition()
 				.attr('r', 0)
 				.remove();
-				
+
 		this.currentPosition = 0;
 		this.generateTarget();
 		this.active = false;
 },
-	
+
 	generateISOPositions: function(num, d, w) {
-		
+
 		// remove all data from live view
 		plotHitsGroup.selectAll('circle.hit')
 			.transition()
@@ -195,7 +195,7 @@ var fittsTest = {
 					.attr('r', 2)
 					.style('opacity', 0)
 					.remove();
-		
+
 		plotPositionGroup.selectAll('line.live')
 			.transition()
 				.duration(LIVE_STAY)
@@ -207,28 +207,28 @@ var fittsTest = {
 				.duration(LIVE_STAY)
 				.style('stroke-opacity', 0)
 				.remove();
-		
-		
+
+
 		this.isoPositions = [];
-		
+
 		for (var i = 0; i < num; i++) {
 			this.isoPositions[i] = {x: testDimension.cx + ((d/2) * Math.cos((2 * Math.PI * i) / num)),
 				y: testDimension.cy + ((d/2) * Math.sin((2 * Math.PI * i) / num)),
 				w: w};
 		}
 	},
-	
+
 	removeTarget: function() {
 		testAreaSVG.selectAll('#target').data([])
 			.exit()
 				.remove();
-				
+
 		this.active = false;
 		this.currentPath = [];
 	},
-	
+
 	mouseClicked: function(x, y) {
-		
+
 		if (distance({x: x, y: y}, this.target) < (this.target.w / 2)) {
 			this.addDataPoint({start: this.start,
 							   target: this.target,
@@ -247,10 +247,10 @@ var fittsTest = {
 			}
 			else {
 				this.currentCount++;
-				this.generateTarget();			
+				this.generateTarget();
 			}
 
-			
+
 			this.last = {x: x, y: y, t: (new Date).getTime()};
 			this.start = this.last;
 			this.currentPath.push(this.last);
@@ -259,7 +259,7 @@ var fittsTest = {
 			this.miss++;
 		}
 	},
-	
+
 	mouseMoved: function(x, y) {
 		if (this.active) {
 			// skip if the mouse did actually not move
@@ -267,24 +267,24 @@ var fittsTest = {
 			if (x == this.last.x && y == this.last.y) {
 				return;
 			}
-			
+
 			// set timeout for updating plots
 			if (this.updateTimeoutHandle) {
 				window.clearTimeout(this.updateTimeoutHandle);
 			}
 			this.updateTimeoutHandle = window.setTimeout(this.updatePlots, UPDATE_DELAY, this);
-			
-			
+
+
 			var newPoint = {x: x, y: y, t: (new Date).getTime()}
 			this.currentPath.push(newPoint)
-			
+
 			var dt = newPoint.t - this.last.t;
 			var dist = distance(this.last, {x: x, y: y})
 			if (dt > 0)
 				var speed = dist / dt;
 			else
 				var speed = 0;
-			
+
 			testAreaSVG.append('line')
 				// .attr('class', '')
 				.attr('x1', this.last.x)
@@ -296,18 +296,18 @@ var fittsTest = {
 					.duration(5000)
 					.style('stroke-opacity', 0)
 					.remove();
-				
+
 			this.last = newPoint;
 		}
 	},
-	
+
 	addDataPoint: function(data) {
 		// add point to data array for plotting into ID/time scatter plot
 		if (this.active == false)
 			return;
 
 		var dt = data.hit.t - data.start.t;
-	
+
 		if (dt < MAX_TIME)  // skip if obvious outlier
 		{
 			var dist = distance(data.target, data.start);
@@ -325,18 +325,18 @@ var fittsTest = {
 					.transition()
 						.duration(200)
 						.ease('bounce')
-						.attr('r', 3);		
-		
+						.attr('r', 3);
+
 			var A = data.start;
 			var B = data.target;
 			var path = data.path;
-		
+
 			var hit = {}
 			var q = project(A, B, data.hit);
 			hit.x = distance(q, B) * sign(q.t - 1);
 			hit.y = distance(q, data.hit) * isLeft(A, B, data.hit);
-		
-		
+
+
 			plotHitsGroup.append('circle')
 				.attr('class', 'hit')
 				.attr('cx', rHit(hit.x, data.target.w / 2))
@@ -348,11 +348,11 @@ var fittsTest = {
 					.duration(500)
 						.ease('linear')
 						.attr('r', 3);
-		
+
 			var last = { x: 0, y: 0, t: data.start.t, v: 0};
 			for (var i = 0; i < path.length; i++) {
 				var p = path[i];
-			
+
 				var q = project(A, B, p);
 				var x = distance(q, A) * sign(q.t);
 				var y = distance(q, p) * isLeft(A, B, p);
@@ -363,7 +363,7 @@ var fittsTest = {
 					var speed = dist / dt;
 				else
 					var speed = 0;
-		
+
 				plotPositionGroup.append('svg:line')
 					.attr('class', 'live')
 					.attr('x1', scaleX(last.x))
@@ -374,7 +374,7 @@ var fittsTest = {
 					.transition()
 						.duration(LIVE_STAY)
 						.style('stroke-opacity', 0.5);
-			
+
 				plotVelocitiesGroup.append('svg:line')
 					.attr('class', 'live')
 					.attr('x1', scaleT(last.t - data.start.t))
@@ -386,7 +386,7 @@ var fittsTest = {
 					.transition()
 						.duration(LIVE_STAY)
 						.style('stroke-opacity', 0.5);
-					
+
 				var last = {}
 				last.x = x;
 				last.y = y;
@@ -395,7 +395,7 @@ var fittsTest = {
 			}
 		}
 	},
-	
+
 	randomizeParams: function() {
 		this.isoParams.distance = Math.floor(randomAB(this.isoLimits.minD, this.isoLimits.maxD));
 		this.isoParams.width = Math.floor(randomAB(this.isoLimits.minW, this.isoLimits.maxW));
@@ -407,118 +407,108 @@ var fittsTest = {
 		d3.select('#sliderDistanceValue').text(this.isoParams.distance);
 		d3.select('#sliderWidthValue').text(this.isoParams.width);
 	},
-	
+
 	addDataSet: function() {
-		
+
 		// first update the plots
 		this.updatePlots(this);
-		
+
 		this.dataCnt++;
 		var num = this.dataCnt;
 		var colour = this.colour(randomAB(0, 10));
-		
+
 		this.data[num] = {data: [], colour: colour};
-		
+
 		this.currentDataSet = num
 		var div = d3.select('#dataSets').append('div')
 			.attr('id', 'dataSet' + num)
 			.text('Data Set ' + num + ' ')
 			.style('background-color', colour);
-		
+
 		var buttonID ='removeDataSet' + num;
 		div.append('button')
 			.attr('id', buttonID)
 			.attr('type', 'button')
 			.text('delete!');
-			
+
 		var that = this;
-		
+
 		$('#' + buttonID).click(function() {
 			that.deleteDataSet(num);
 			fittsTest.active = false;
 		});
-		
+
 		$('#dataSet' + num).click(function() {
 			if (assIsKey(num, that.data)) {
 				that.currentDataSet = num;
-				that.highlightDataSet(num);				
+				that.highlightDataSet(num);
 			}
 			fittsTest.active = false;
 
 		})
-			
+
 		this.highlightDataSet(num);
 		// add colour
-		
+
 	},
-	
+
 	deleteDataSet: function(num) {
 		if (assSize(this.data) == 1)
 		{
 			alert('Cannot delete data set! Create another data set first.')
 		} else
-		{	
+		{
 			d3.select('#dataSet' + num).remove();
 			delete this.data[num];
-			
+
 			scatterGroup.selectAll('.cat' + num)
 				.transition()
 					.duration(500)
 						.attr('r', 0)
 						.remove();
-			
+
 			scatterEffectiveGroup.selectAll('.cat' + num)
 				.transition()
 					.duration(500)
 						.style('opacity', 0)
 						.remove();
-			
+
 			throughputGroup.selectAll('rect.cat' + num)
 				.transition()
 					.duration(500)
 						.attr('width', 0)
 						.remove();
-						
+
 			positionEffectiveGroup.selectAll('line.cat' + num)
 				.transition()
 					.duration(500)
 						.style('opacity', 0)
 						.remove()
-			
+
 			speedEffectiveGroup.selectAll('line.cat' + num)
 				.transition()
 					.duration(500)
 						.style('opacity', 0)
 						.remove()
-			
+
 			if (num == this.currentDataSet) {
 				var first = parseInt(assFirstKey(this.data));
 				this.currentDataSet = first;
 				this.highlightDataSet(first);
 			}
-			
+
 			this.updatePlots(this);
 		}
 	},
-	
+
 	highlightDataSet: function(num) {
 		d3.selectAll('#dataSets div')
 			.attr('class', '');
 		d3.select('#dataSet' + num)
 			.attr('class', 'active')
 	},
-	
+
 	updatePlots: function(that) {
-		// a little I candy :D
-		d3.select('body').append('div')
-			.attr('class', 'msg')
-			.text('updating plots...')
-			.style('opacity', 1)
-			.transition()
-				.duration(2000)
-					.style('opacity', 0)
-					.remove();
-					
 		/* we haven't moven inside the test area, so we can as well disable
 		 * the test for now
 		 */
@@ -530,9 +520,9 @@ var fittsTest = {
 		// process data
 		var dataSetIndex = -1; // evil hack to make it start at 0 then.
 		for (var key in that.data) { // for each data set
-			
+
 			dataSetIndex++;
-			
+
 			var groups = [];
 			for (var i = 0; i < that.data[key].data.length; i++) { // for each datum
 				var datum = that.data[key].data[i];
@@ -540,15 +530,15 @@ var fittsTest = {
 				if (!groups[groupID]) {
 					groups[groupID] = [];
 				}
-				
+
 				var q = project(datum.start, datum.target, datum.hit);
 				// var x = distance(q, datum.start) * sign(q.t);
 				var y = distance(q, datum.hit) * isLeft(datum.start, datum.target, datum.hit);
-				
+
 				datum.realDistance = distance(datum.start, datum.hit); // use real distance here.
 				datum.projectedHitOffsetX = distance(q, datum.target) * sign(q.t - 1);
 				datum.projectedHitOffsetY = y;
-				
+
 				groups[groupID].push(datum);
 			}
 
@@ -557,11 +547,11 @@ var fittsTest = {
 				if (groups[group].length < 3) { // exlcude groups with length < 3
 					continue;
 				}
-					
+
 				var xEffective = 4.133 * Math.sqrt(variance(groups[group], function(d) { return d.projectedHitOffsetX; }))
 				var yEffective = 4.133 * Math.sqrt(variance(groups[group], function(d) { return d.projectedHitOffsetY; }))
 				var dEffective = mean(groups[group], function(d) { return d.realDistance; });
-				
+
 				for (var i = 0; i < groups[group].length; i++) {
 					var datum = groups[group][i];
 					var We = Math.min(xEffective, yEffective); // SMALLER-OF model (MacKenzie, Buxton 92)
@@ -571,50 +561,50 @@ var fittsTest = {
 					newData.push(datum);
 				}
 			}
-			
-			
+
+
 			// insert stuff in SVG
 			var colour = that.data[key].colour;
-			
+
 			var insert = function(d) {
 				d.attr('cx', function(d) { return effScatterX(d.IDe); })
 				.attr('cy', function(d) { return effScatterY(d.time); })
 				.attr('r', 5);
 			}
-			
+
 			var circles = scatterEffectiveGroup.selectAll('circle.cat' + key)
 				.data(newData);
-			
+
 			circles.enter()
 				.append('circle')
 					.attr('class', 'cat' + key)
 					.style('fill', colour)
 					.style('opacity', 0.5)
 					.call(insert);
-			
+
 			circles.transition()
 				.duration(500)
 					.call(insert);
-					
-					
+
+
 			// ==================== regression ========================
 			var covTIDe = cov(newData,
 				function(d) { return d.time; },
 				function(d) { return d.IDe});
-			
+
 			var varIDe = variance(newData, function(d) { return d.IDe; })
-			
+
 			if (varIDe > 0)
 				var b = covTIDe / varIDe;
 			else
 				var b = 0;
-			
+
 			var mT = mean(newData, function(d) { return d.time; });
 			var mIDe = mean(newData, function(d) { return d.IDe; });
 			var a = mT - b * mIDe;
-			
+
 			if (!isNaN(a))
-			{			
+			{
 				var makeLine = function(d) {
 					return d
 						.attr('x1', 0)
@@ -622,53 +612,53 @@ var fittsTest = {
 						.attr('y1', function(d) { return effScatterY(d.y1); })
 						.attr('y2', function(d) { return effScatterY(d.y2); })
 				}
-			
+
 				var regression = scatterEffectiveGroup.selectAll('line.cat' + key)
 					.data([{y1:a + b * 0.5, y2: a + b * 6.5}]);
-			
+
 				regression.enter().append('line')
 					.attr('class', 'cat' + key)
 					.style('stroke', colour)
 					.style('stroke-width', 2)
 					.call(makeLine);
-			
+
 				regression.transition()
 					.call(makeLine);
 			}
-				
+
 
 			// ============== histogram ====================
 			var histThroughput = d3.layout.histogram()
 				.bins(20)
 				.range([0,10])
 				.value(function(d){return d.throughput;})
-				
+
 			var throughputHistogramData = histThroughput(newData)
-			
+
 	//		histYMax = d3.max(throughputHistogramData, function(d) { return d.y; });
-						
+
 			var histX = d3.scale.ordinal()
-				.domain(throughputHistogramData.map(function(d) { return d.x; }))	
+				.domain(throughputHistogramData.map(function(d) { return d.x; }))
 				.rangeRoundBands([0, histDimension.innerWidth]);
-	
+
 			var histY = d3.scale.linear()
 				.domain([0, d3.max(throughputHistogramData, function(d) { return d.y; })])
 				.range([histDimension.innerHeight, 0]);
-				
+
 			var throughputRect = throughputGroup.selectAll('rect.cat' + key)
 				.data(throughputHistogramData);
-				
-			
+
+
 			var numDataSets = assSize(that.data);
 			var xOffset = (histX.rangeBand() / numDataSets) * dataSetIndex;
-			
+
 			var makeRect = function(d) {
 				d.attr('x', function(offset) { return function(d) { return (histX(d.x) + offset); }; }(xOffset))
 				.attr('y', function(scale) { return function(d) { return (scale(d.y)); }; }(histY))
 				.attr('width', (histX.rangeBand() / numDataSets) - 1)
 				.attr('height', function(scale) { return function(d) { return (scale(0) - scale(d.y)); }; }(histY));
 			}
-			
+
 			var histXAxis = d3.svg.axis()
 				.scale(histX)
 				.ticks(2);
@@ -676,17 +666,17 @@ var fittsTest = {
 			var histYAxis = d3.svg.axis()
 				.scale(histY)
 				.ticks(5)
-			throughputGroup.selectAll("g.axis").remove()	
-			
+			throughputGroup.selectAll("g.axis").remove()
+
 			throughputGroup.append("g")
 				.attr("class", "axis")
 				.attr("transform", "translate(0," + histDimension.innerHeight + ")")
-				.call(histXAxis.tickSize(6,3,6).orient("bottom"));	
-	
+				.call(histXAxis.tickSize(6,3,6).orient("bottom"));
+
 			// throughputGroup.append("g")
 				// .attr("class", "axis")
 				// .call(histYAxis.tickSize(-histDimension.innerWidth).orient("left"));
-			
+
 			throughputRect.enter()
 				.append('rect')
 				.attr('class', 'cat' + key)
@@ -694,11 +684,11 @@ var fittsTest = {
 				.attr('ry', 2)
 				.style('fill', colour)
 				.call(makeRect)
-				
+
 			throughputRect.transition()
 				.duration(500)
 				.call(makeRect)
-				
+
 			// ==================== eff position and speed ===================
 			// more or less copy-pasted from above
 			for (var i = 0; i < newData.length; i++)
@@ -709,12 +699,12 @@ var fittsTest = {
 				var dAB = distance(A, B);
 				var offset = newData[i].distance - dAB;
 				offset = 0;
-								
+
 				for (var j = 0; j < newData[i].path.length; j++)
 				{
 
 					var p = newData[i].path[j];
-			
+
 					var q = project(A, B, p);
 					var x = distance(q, A) * sign(q.t);
 					var y = distance(q, p) * isLeft(A, B, p);
@@ -725,7 +715,7 @@ var fittsTest = {
 						var speed = dist / dt;
 					else
 						var speed = 0;
-		
+
 					positionEffectiveGroup.append('line')
 						.attr('class', 'cat' + key)
 						.attr('x1', effPositionX(last.x + offset))
@@ -734,7 +724,7 @@ var fittsTest = {
 						.attr('y2', effPositionY(y))
 						.style('stroke', colour)
 						.style('opacity', 0.5);
-			
+
 					speedEffectiveGroup.append('line')
 						.attr('class', 'cat' + key)
 						.attr('x1', effSpeedX(last.t - A.t))
@@ -743,7 +733,7 @@ var fittsTest = {
 						.attr('y2', effSpeedY(speed))
 						.style('stroke', colour)
 						.style('opacity', 0.5);
-					
+
 					var last = {}
 					last.x = x;
 					last.y = y;
@@ -751,25 +741,25 @@ var fittsTest = {
 					last.v = speed;
 				}
 			}
-		}		
+		}
 	}
 };
 
 // _empirical_ covariance
 function cov(data, extractorA, extractorB) {
-	
+
 	if (data.length <= 1) { // no covariance for 0 or 1 element.
 		return 0;
 	}
 
 	var mA = mean(data, extractorA);
 	var mB = mean(data, extractorB);
-	
+
 	var cov = 0;
 	for (var i = 0; i < data.length; i++) {
 		cov += (extractorA(data[i]) - mA) * (extractorB(data[i]) - mB);
 	}
-	
+
 	return cov / (data.length - 1);
 }
 
@@ -918,7 +908,7 @@ var positionXAxis = d3.svg.axis()
 var positionYAxis = d3.svg.axis()
 	.scale(scaleY)
 	.ticks(6)
-	
+
 plotPositionGroup.append("g")
     .attr("class", "axis")
     .call(positionXAxis.tickSize(plotPositionDimension.innerHeight).orient("bottom"));
@@ -927,7 +917,7 @@ plotPositionGroup.append("g")
     .call(positionYAxis.tickSize(-plotPositionDimension.innerWidth).orient("left"));
 
 
-	
+
 
 
 var plotHitsSVG = d3.select('#plot-hits').append('svg')
@@ -959,8 +949,8 @@ plotHitsGroup.append('line')
 	.attr('x2', -10)
 	.attr('y2', 10);
 
-	
-	
+
+
 var plotVelocitiesSVG = d3.select('#plot-velocities').append('svg')
 	.attr('width', plotVelocitiesDimension.width)
 	.attr('height', plotVelocitiesDimension.height)
@@ -984,7 +974,7 @@ plotVelocitiesGroup.append("g")
 	// 	.attr('x', 80)
 	// 	.attr('y', plotVelocitiesDimension.innerHeight + 25)
 	// 	.style('text-anchor', 'middle');
-		
+
 plotVelocitiesGroup.append("g")
     .attr("class", "axis")
     .call(speedYAxis.tickSize(-plotVelocitiesDimension.innerWidth).orient("left"))
@@ -1015,7 +1005,7 @@ var yAxis = d3.svg.axis()
 	.scale(scatterY)
 	.ticks(6)
 	.tickSize(6, 3, 6)
-	
+
 // print axes
 scatterGroup.append("g")
     .attr("class", "axis")
@@ -1078,7 +1068,7 @@ var throughputGroup = throughputSVG.append('g')
 
 //	.call(histYAxis.tickSize(histDimension.innerWidth).orient("left"));
 
-	
+
 
 var positionEffectiveSVG = d3.select('#positionEffective').append('svg')
 	.attr('width', positionEffectiveDimension.width)
@@ -1105,13 +1095,13 @@ positionEffectiveGroup.append('g')
 	.attr('class', 'axis')
 	.attr('transform', 'translate(0, ' + positionEffectiveDimension.innerHeight + ')')
 	.call(positionEffXAxis.orient('bottom'));
-	
+
 positionEffectiveGroup.append('g')
 	.attr('class', 'axis')
-		.call(positionEffYAxis.orient('left'));	
-	
-	
-	
+		.call(positionEffYAxis.orient('left'));
+
+
+
 
 var speedEffectiveSVG = d3.select('#speedEffective').append('svg')
 	.attr('width', speedEffectiveDimension.width)
@@ -1145,7 +1135,7 @@ speedEffectiveGroup.append('g')
 
 
 // init code
-// should probably go somewhere else though. 
+// should probably go somewhere else though.
 fittsTest.active = false;
 fittsTest.generateISOPositions(15, 150, 10);
 fittsTest.updateISOCircles();

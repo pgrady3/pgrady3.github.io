@@ -26,10 +26,7 @@ function makeDimension(width, height, top, right, bottom, left) {
 // set up dimensions for the plotting.
 var testDimension = makeDimension(620, 400, 30, 30, 30, 30);
 
-var LIVE_STAY = 1000;
-var MAX_TIME = 2000;
-var UPDATE_DELAY = MAX_TIME;
-var MAX_SPEED = 6; // pixel/ms
+var MAX_SPEED = 2; // pixel/ms
 
 function rHit(r, rTarget) {
 	return ((plotHitsDimension.innerWidth / 2) / rTarget) * r;
@@ -59,15 +56,8 @@ var fittsTest = {
 	active: false,
 
 	data: [],
-	currentDataSet: 0,
-	dataCnt: 0,
 
 	colour: d3.scale.category10(),
-
-	sumID: 0,
-	sumTime: 0,
-
-	updateTimeoutHandle: undefined,
 
 	generateTarget: function() {
 		this.target = this.isoPositions[this.currentPosition];
@@ -185,13 +175,6 @@ var fittsTest = {
 				return;
 			}
 
-			// set timeout for updating plots
-			if (this.updateTimeoutHandle) {
-				window.clearTimeout(this.updateTimeoutHandle);
-			}
-			this.updateTimeoutHandle = window.setTimeout(this.updatePlots, UPDATE_DELAY, this);
-
-
 			var newPoint = {x: x, y: y, t: (new Date).getTime()}
 			this.currentPath.push(newPoint)
 
@@ -289,5 +272,3 @@ var testAreaSVG = d3.select('#test-area').append('svg')
 fittsTest.active = false;
 fittsTest.generateISOPositions(15, 150, 10);
 fittsTest.updateISOCircles();
-d3.select('#sliderDistanceValue').text(fittsTest.isoParams.distance);
-d3.select('#sliderWidthValue').text(fittsTest.isoParams.width);

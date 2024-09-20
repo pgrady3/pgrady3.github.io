@@ -86,7 +86,7 @@ window.onload = function() {
                             [[1, 0], [1, 1], [0, 1], [-1, 0], [0, -1], [1, -1]]];  // Odd row tiles
 
     // Number of different colors
-    var bubblecolors = 7;
+    var bubblecolors = 5;
 
     // Game states
     var gamestates = { init: 0, ready: 1, shootbubble: 2, removecluster: 3, gameover: 4 };

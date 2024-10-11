@@ -135,8 +135,8 @@ circle.iso {
 .start-screen button,
 .start-screen select,
 .start-screen p {
-	font-size: 4rem;
-	padding: 1.5rem 1.75rem;
+	font-size: 2rem;
+	padding: 1rem 1rem;
 	text-align: center;
 }
 

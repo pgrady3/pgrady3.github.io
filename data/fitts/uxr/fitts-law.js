@@ -29,6 +29,7 @@ var testDimension = makeDimension(620, 400, 30, 30, 30, 30);
 var MAX_SPEED = 2; // pixel/ms
 var elapsed = 0;
 var fittsID = 0;
+var trialNum = 1;
 
 const experienceScreen = document.getElementById('experience-screen');
 const startScreen = document.getElementById('start-screen');
@@ -301,13 +302,13 @@ function startExperience() {
 	console.log('start experience, condition: ' + condition);
 
 	if (condition === '1') {
-		fittsTest.advanceParams(200, 50);
+		fittsTest.advanceParams(300, 75);
 	}
 	else if (condition === '2') {
-		fittsTest.advanceParams(350, 50);
+		fittsTest.advanceParams(200, 25);
 	}
 	else if (condition === '3') {
-		fittsTest.advanceParams(200, 25);
+		fittsTest.advanceParams(300, 20);
 	}
 	else
 	{
@@ -331,7 +332,8 @@ function endExperience() {
 	let elapsedStr = (elapsed / 1000).toFixed(2)
 	let idStr = fittsID.toFixed(2)
 	let numTargets = fittsTest.currentCount - 1
-	startText.innerText = `Condition: ${conditionSelect.value}, Time: ${elapsedStr}s, ID: ${idStr}, Count: ${numTargets}\n` + startText.innerText;
+	startText.innerText = `Trial:${trialNum}, Condition: ${conditionSelect.value}, Time: ${elapsedStr}s, ID: ${idStr}\n` + startText.innerText;
+	trialNum += 1;
 
 	// init code
 	fittsTest.currentPosition = 0,

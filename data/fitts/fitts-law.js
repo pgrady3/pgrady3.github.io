@@ -152,7 +152,8 @@ var fittsTest = {
 				this.advanceParams();
 			}
 
-			if (this.currentCount === 27) {
+			// if (this.currentCount === 27) {
+			if (this.currentCount === 9) {
 				this.active = false;
 				endExperience();
 			}
@@ -205,16 +206,19 @@ var fittsTest = {
 
 	advanceParams: function() {
 		console.log('advance params, current count: ' + this.currentCount);
-		if (this.currentCount >= 18) {
-			this.isoParams.distance = 250;
-			this.isoParams.width = 100;
-		} else if (this.currentCount >= 9) {
-			this.isoParams.distance = 150;
-			this.isoParams.width = 30;
-		} else {
-			this.isoParams.distance = 200;
-			this.isoParams.width = 50;
-		}
+		// if (this.currentCount >= 18) {
+		// 	this.isoParams.distance = 250;
+		// 	this.isoParams.width = 100;
+		// } else if (this.currentCount >= 9) {
+		// 	this.isoParams.distance = 150;
+		// 	this.isoParams.width = 30;
+		// } else {
+		// 	this.isoParams.distance = 200;
+		// 	this.isoParams.width = 50;
+		// }
+
+		this.isoParams.distance = 200;
+		this.isoParams.width = 50;
 
 		// this.isoParams.distance = Math.floor(randomAB(this.isoLimits.minD, this.isoLimits.maxD));
 		// this.isoParams.width = Math.floor(randomAB(this.isoLimits.minW, this.isoLimits.maxW));
@@ -292,7 +296,7 @@ function startExperience() {
 	startScreen.style.display = "none";
 	experienceScreen.style.display = "";
 
-	fittsTest.updateISOCircles();
+	fittsTest.advanceParams();
 }
 
 function endExperience() {

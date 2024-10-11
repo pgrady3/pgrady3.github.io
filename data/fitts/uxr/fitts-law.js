@@ -28,6 +28,7 @@ var testDimension = makeDimension(620, 400, 30, 30, 30, 30);
 
 var MAX_SPEED = 2; // pixel/ms
 var elapsed = 0;
+var fittsID = 0;
 
 const experienceScreen = document.getElementById('experience-screen');
 const startScreen = document.getElementById('start-screen');
@@ -223,6 +224,9 @@ var fittsTest = {
 		// this.isoParams.distance = Math.floor(randomAB(this.isoLimits.minD, this.isoLimits.maxD));
 		// this.isoParams.width = Math.floor(randomAB(this.isoLimits.minW, this.isoLimits.maxW));
 
+		fittsID = Math.log2(distance / width + 1);
+		console.log(`dist ${distance} width ${width} fitts id ${fittsID}`);
+
 		this.updateISOCircles();
 	},
 };
@@ -293,9 +297,6 @@ function startTimer() {
 }
 
 function startExperience() {
-	startScreen.style.display = "none";
-	experienceScreen.style.display = "";
-
 	let condition = conditionSelect.value;
 	console.log('start experience, condition: ' + condition);
 
@@ -303,24 +304,34 @@ function startExperience() {
 		fittsTest.advanceParams(200, 50);
 	}
 	else if (condition === '2') {
-		fittsTest.advanceParams(200, 50);
+		fittsTest.advanceParams(350, 50);
 	}
 	else if (condition === '3') {
-		fittsTest.advanceParams(150, 30);
+		fittsTest.advanceParams(200, 25);
 	}
-	else if (condition === '4') {
-		fittsTest.advanceParams(250, 100);
+	else
+	{
+		return
 	}
-	else if (condition === '5') {
-		fittsTest.advanceParams(150, 100);
-	}
+	// else if (condition === '4') {
+	// 	fittsTest.advanceParams(250, 100);
+	// }
+	// else if (condition === '5') {
+	// 	fittsTest.advanceParams(150, 100);
+	// }
 
+	startScreen.style.display = "none";
+	experienceScreen.style.display = "";
 }
 
 function endExperience() {
 	experienceScreen.style.display = "none";
 	startScreen.style.display = "";
-	startText.innerText = `${(elapsed / 1000).toFixed(2)} seconds\n` + startText.innerText;
+
+	let elapsedStr = (elapsed / 1000).toFixed(2)
+	let idStr = fittsID.toFixed(2)
+	let numTargets = fittsTest.currentCount - 1
+	startText.innerText = `Condition: ${conditionSelect.value}, Time: ${elapsedStr}s, ID: ${idStr}, Count: ${numTargets}\n` + startText.innerText;
 
 	// init code
 	fittsTest.currentPosition = 0,

@@ -188,17 +188,17 @@ var fittsTest = {
 			else
 				var speed = 0;
 
-			testAreaSVG.append('line')
-				// .attr('class', '')
-				.attr('x1', this.last.x)
-				.attr('x2', newPoint.x)
-				.attr('y1', this.last.y)
-				.attr('y2', newPoint.y)
-				.style('stroke', v(speed))
-				.transition()
-					.duration(5000)
-					.style('stroke-opacity', 0)
-					.remove();
+			// testAreaSVG.append('line')
+			// 	// .attr('class', '')
+			// 	.attr('x1', this.last.x)
+			// 	.attr('x2', newPoint.x)
+			// 	.attr('y1', this.last.y)
+			// 	.attr('y2', newPoint.y)
+			// 	.style('stroke', v(speed))
+			// 	.transition()
+			// 		.duration(5000)
+			// 		.style('stroke-opacity', 0)
+			// 		.remove();
 
 			this.last = newPoint;
 		}

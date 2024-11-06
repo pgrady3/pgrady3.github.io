@@ -1,15 +1,19 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
+    margin: 0;
+    display: flex;
+    height: 100vh;
 }
-
 #editor {
-    font-size: 48px;
-    padding: 10px;
+    font-size: 32px;
+    padding: 20px;
     width: 80%;
     height: 80vh;
     margin: 40px auto;
     border: none;
-    border-radius: 10px;
+    border-radius: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: block;
+    text-align: left;
 }

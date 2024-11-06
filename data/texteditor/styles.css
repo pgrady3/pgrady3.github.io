@@ -1,0 +1,15 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+#editor {
+    font-size: 48px;
+    padding: 10px;
+    width: 80%;
+    height: 80vh;
+    margin: 40px auto;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}

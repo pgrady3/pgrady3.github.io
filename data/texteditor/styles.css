@@ -19,4 +19,5 @@ body {
     display: block;
     text-align: left;
     resize: none;
+    caret-size: 2px; 
 }

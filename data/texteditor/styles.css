@@ -1,7 +1,7 @@
 body {
-    font-family: 'Monaco', monospace;
+    font-family: 'Lucida Console', monospace;
     background-color: #f0f0f0;
-    margin: 0;
+    margin: 20px;
     display: flex;
     justify-content: center;
     align-items: top;
@@ -19,5 +19,57 @@ body {
     display: block;
     text-align: left;
     resize: none;
-    letter-spacing: 4px;
 }
+
+#textbox {
+    font-family: 'Lucida Console', monospace;
+    width: 80%;
+    height: 80vh;
+    font-size: 24px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: block;
+    text-align: left;
+    resize: none;
+    letter-spacing: 10px;
+  }
+
+#textbox::caret {
+    width: 10px;
+    background-color: #FF0000;
+
+  }
+
+pre {
+    background: #000;
+    color: white;
+    font-family: monospace;
+    padding: 1ch;
+  }
+  
+  pre.caret-bar > span {
+    animation: blink 1s step-end infinite;
+    border-left: 2px solid white;
+  }
+  
+  pre.caret-block > span {
+    background-color: hsla(1, 1%, 100%, 1);
+    color: #000;
+  }
+  
+  pre.caret-underscore > span {
+    animation: blink 1s step-end infinite;
+    border-bottom: 2px solid white;
+  }
+  
+  @keyframes blink {
+    from,
+    to {
+      border-color: transparent;
+    }
+    50% {
+      border-color: #fff;
+    }
+  }

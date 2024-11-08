@@ -1,18 +1,19 @@
-const textbox = document.getElementById("textbox");
-// Set the initial text
-textbox.value = "Try correcting theee misspelled word.\n\nThen highlight this sentence by dwell and drag.\n\nGreat! Feel free to type your own message.";
-// Add an event listener to handle user input
-textbox.addEventListener("input", function(event) {
-  // Get the current text
-  const text = textbox.textContent;
-  // Handle backspace key
-  if (event.key === "Backspace") {
-    // Remove the last character from the text
-    textbox.textContent = text.slice(0, -1);
-  }
-  // Handle other keys
-  else {
-    // Append the new character to the text
-    textbox.textContent += event.key;
-  }
+document.addEventListener('DOMContentLoaded', () => {
+    const editableBox = document.querySelector('.editable-box');
+    const customCaret = document.createElement('div');
+    customCaret.classList.add('custom-caret');
+    document.body.appendChild(customCaret);
+    editableBox.addEventListener('input', updateCaretPosition);
+    editableBox.addEventListener('click', updateCaretPosition);
+    editableBox.addEventListener('keyup', updateCaretPosition);
+    function updateCaretPosition() {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            customCaret.style.top = `${rect.top + window.scrollY}px`;
+            customCaret.style.left = `${rect.left + window.scrollX - 3}px`; // Adjusted 2 pixels to the left
+            customCaret.style.height = `${rect.height}px`;
+        }
+    }
 });

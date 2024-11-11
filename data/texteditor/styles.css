@@ -29,6 +29,7 @@ body {
     background-color: Blue;
     justify-content: center;
     animation: blink 1s step-end infinite;
+    pointer-events: none; /* Make the caret non-interactive */
 }
 @keyframes blink {
     from, to {

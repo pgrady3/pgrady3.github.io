@@ -8,6 +8,8 @@ let SCREEN_AREA_USED = 0.9;    // Area of the screen which is used by the experi
 let BUTTON_RESPAWN_MAX_RAD = 0.5;     // Max distance to the new button, in viewport width
 const HOLD_DURATION_MS = 1000;
 const MOVE_INTERVAL_TIMER_MS = 3000;
+const MAX_SCROLL_TRIALS = 2;
+const MAX_SELECTION_TRIALS = 2;
 
 let timer;
 let backgroundTimer;
@@ -18,10 +20,30 @@ let lastY = window.innerHeight / 2;
 let successfulHold = false;
 let successChimes = [];
 let errorChime;
+let rng;
+
+class RandomGenerator {
+    constructor(seed) {
+      this.seed = seed;
+      this.a = 1664525;
+      this.c = 1013904223;
+      this.m = Math.pow(2, 32);
+      this.x = seed;
+    }
+
+    nextInt() {
+        this.x = (this.a * this.x + this.c) % this.m;
+        return this.x;
+    }
+
+    random() {
+      return this.nextInt() / this.m;
+    }
+  }
 
 
 function loadChimes() {
-    for (var i = 1; i <= 17; i++) {
+    for (var i = 1; i <= 1; i++) {
         successChimes.push(new Audio('audio/chime_' + i + '.mp3'));
     }
 
@@ -30,7 +52,7 @@ function loadChimes() {
 
 function playChime(success) {
     if (success) {
-        let soundToPlay = successChimes[Math.floor(Math.random() * successChimes.length)];
+        let soundToPlay = successChimes[Math.floor(rng.random() * successChimes.length)];
         console.log(`Playing chime ${soundToPlay.src}`);
         soundToPlay.pause();
         soundToPlay.currentTime = 0;
@@ -59,7 +81,7 @@ function checkClick(e, clickMethod) {
 }
 
 function getRandomRange(min, max) {
-    return Math.random() * (max - min) + min;
+    return rng.random() * (max - min + 1) + min;
 }
 
 const button_handler = (e) => {
@@ -123,7 +145,7 @@ function setBackgroundTimer() {
 }
 
 function moveTargetButton() {
-    const button_size = BUTTON_SIZES[Math.floor(Math.random() * BUTTON_SIZES.length)];
+    const button_size = BUTTON_SIZES[Math.floor(rng.random() * BUTTON_SIZES.length)];
     const buttonSize = window.innerWidth * button_size;
 
     // Random polar sampling
@@ -164,6 +186,7 @@ function moveTargetButton() {
 }
 
 function startExperience() {
+    rng = new RandomGenerator(7654321);
     loadChimes();
     successfulClicks = 0;
     moveTargetButton();
@@ -202,11 +225,11 @@ function setExperienceTitle(title, explanation) {
 function highlightRandomPhraseScroll() {
     let paragraphs = document.querySelectorAll('.scroll-text');
     paragraphs = Array.from(paragraphs).slice(1, -1);  // remove first and last element so the text is always possible to scroll to
-    const randomParagraph = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+    const randomParagraph = paragraphs[Math.floor(rng.random() * paragraphs.length)];
     const paragraphText = randomParagraph.textContent.replace(/\s+/g, ' ').trim();
     const phrases = paragraphText.split(' ');
-    const wordCount = Math.floor(Math.random() * 2) + 3; // Select between 3 and 5 words
-    const startIndex = Math.floor(Math.random() * (phrases.length - wordCount));
+    const wordCount = Math.floor(rng.random() * 2) + 3; // Select between 3 and 5 words
+    const startIndex = Math.floor(rng.random() * (phrases.length - wordCount));
     const endIndex = startIndex + wordCount;
 
     const highlight = document.createElement('span');
@@ -224,6 +247,16 @@ function highlightRandomPhraseScroll() {
     }
 
     showUpDownArrows();
+
+    if (successfulClicks >= MAX_SCROLL_TRIALS) {
+        // End experience
+        document.getElementById('start-screen').style.display = "";
+        document.getElementById('scroll-body').style.display = "none";
+        removeHighlight();
+
+        document.getElementById('scroll-body').removeEventListener('scroll', onScrollCallback);
+
+    }
 }
 
 
@@ -278,12 +311,15 @@ function showUpDownArrows() {
 }
 
 function onScrollCallback() {
+    console.log(`Scroll callback ${isHighlightInTargetbox()}`);
     // If the highlight is in the target box, wait and check again. If still in, make a new highlight
     clearTimeout(highlightTimeout);
 
     if (isHighlightInTargetbox()) {
         highlightTimeout = setTimeout(() => {
             if (isHighlightInTargetbox()) {   // check if still in target zone
+                successfulClicks += 1;
+                console.log(`click ${successfulClicks}`);
                 removeHighlight();
                 highlightRandomPhraseScroll();
                 playChime(true);
@@ -293,25 +329,31 @@ function onScrollCallback() {
 }
 
 function startScrollExperience() {
+    rng = new RandomGenerator(7654321);
+    successfulClicks = 0;
     loadChimes();
     document.getElementById('start-screen').style.display = "none";
     document.getElementById('scroll-body').style.display = "";
 
     document.getElementById('scroll-body').addEventListener('scroll', onScrollCallback);
 
+    document.getElementById('scroll-body').scrollTop = 0;
+
+
     highlightRandomPhraseScroll();
+
 }
 
 function highlightRandomPhraseSelection() {
     let paragraphs = document.querySelectorAll('.selection-text');
     paragraphs = Array.from(paragraphs)
     // paragraphs = paragraphs.slice(1, -1);  // remove first and last element
-    const randomParagraph = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+    const randomParagraph = paragraphs[Math.floor(rng.random() * paragraphs.length)];
     const paragraphText = randomParagraph.textContent.replace(/\s+/g, ' ').trim();
     const phrases = paragraphText.split(' ');
-    const randomDistribution = Math.random() * Math.random();   // Make the distribution skewed towards zero
+    const randomDistribution = rng.random() * rng.random();   // Make the distribution skewed towards zero
     const wordCount = Math.floor(randomDistribution * 10) + 3;
-    const startIndex = Math.floor(Math.random() * (phrases.length - wordCount));
+    const startIndex = Math.floor(rng.random() * (phrases.length - wordCount));
     const endIndex = startIndex + wordCount;
 
     const highlight = document.createElement('span');
@@ -369,6 +411,8 @@ function removeExcessParagraphs() {
 }
 
 function startTextSelectionExperience() {
+    rng = new RandomGenerator(7654321);
+    successfulClicks = 0;
     loadChimes();
     document.getElementById('start-screen').style.display = "none";
     document.getElementById('textselection-body').style.display = "";

@@ -312,6 +312,7 @@ function showUpDownArrows() {
 }
 
 function onScrollCallback() {
+    console.log('Scroll callback');
     // If the highlight is in the target box, wait and check again. If still in, make a new highlight
     clearTimeout(highlightTimeout);
 
@@ -335,10 +336,9 @@ function startScrollExperience() {
     document.getElementById('start-screen').style.display = "none";
     document.getElementById('scroll-body').style.display = "";
 
-    document.getElementById('scroll-body').addEventListener('scroll', onScrollCallback);
+    document.getElementById('scroll-container').addEventListener('scroll', onScrollCallback);
 
-    document.getElementById('scroll-body').scrollTop = 0;
-
+    document.getElementById('scroll-container').scrollTop = 0;
 
     highlightRandomPhraseScroll();
 

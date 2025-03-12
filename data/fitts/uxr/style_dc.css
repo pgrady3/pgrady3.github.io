@@ -27,7 +27,7 @@
     font-size: 4rem;
     padding: 1.5rem 1.75rem;
     text-align: center;
-    font-family: sans-serif;
+    font-family: Georgia, serif;
 }
 
 .start-screen button {
@@ -111,8 +111,10 @@ button {
 #scroll-body {
     width: 100vw;
     height: 100vh;
-    overflow: auto;
     background: #EFEFEF;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;    /* Center vertically */
 }
 
 .scroll-container {
@@ -123,16 +125,19 @@ button {
     height: auto;
     margin: auto;
     background: #FFF;
+    font-size: 2rem;
+    line-height: 1.5;
+    overflow: auto;
 }
 
-.text .scrollable {
+.scrollable {
     width: 100%;
-    height: 100%;
+    height: 600px;
     font-size: 2rem;
     line-height: 1.5;
 }
 
-.text p {
+.scroll-container p {
     margin-bottom: 1rem;
 }
 

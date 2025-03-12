@@ -119,7 +119,7 @@ button {
     border: 2px solid #ccc;
     border-radius: 5px;
     padding: 2rem;
-    width: 600px;
+    width: 700px;
     height: auto;
     margin: auto;
     background: #FFF;
@@ -128,12 +128,12 @@ button {
 .text .scrollable {
     width: 100%;
     height: 100%;
-    font-size: 2.25rem;
+    font-size: 2rem;
     line-height: 1.5;
 }
 
 .text p {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .highlight {
@@ -184,7 +184,7 @@ button {
     border: 2px solid #ccc;
     border-radius: 5px;
     padding: 2rem;
-    width: calc(80rem);
+    width: 750px;
     height: calc(100vh - 0rem);
     margin: auto;
     background: #FFF;

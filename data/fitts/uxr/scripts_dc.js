@@ -21,6 +21,7 @@ let successfulHold = false;
 let successChimes = [];
 let errorChime;
 let rng;
+let elapsed = 0;
 
 class RandomGenerator {
     constructor(seed) {
@@ -311,7 +312,6 @@ function showUpDownArrows() {
 }
 
 function onScrollCallback() {
-    console.log(`Scroll callback ${isHighlightInTargetbox()}`);
     // If the highlight is in the target box, wait and check again. If still in, make a new highlight
     clearTimeout(highlightTimeout);
 
@@ -341,6 +341,8 @@ function startScrollExperience() {
 
 
     highlightRandomPhraseScroll();
+
+    startTimer();
 
 }
 
@@ -382,6 +384,16 @@ function selectionChangedHandler() {
         removeHighlight();
         highlightRandomPhraseSelection();
         playChime(true);
+        successfulClicks += 1;
+
+        if (successfulClicks >= MAX_SELECTION_TRIALS) {
+            // End experience
+            document.getElementById('start-screen').style.display = "";
+            document.getElementById('textselection-body').style.display = "none";
+            //removeHighlight();
+
+            document.removeEventListener('mouseup', selectionChangedHandler);
+        }
     }
 }
 
@@ -398,7 +410,7 @@ function removeHighlight() {
 
 function removeExcessParagraphs() {
     // This function deletes paragraphs until there's no more scrollbar. This is run once on pageload, and it makes sure we don't have a scrollbar.
-    const paragraphs = document.querySelectorAll('p');
+    const paragraphs = document.querySelectorAll('#textselection-container p');
     const scrollable = document.getElementById('scroller');
     for (let i = paragraphs.length - 1; i >= 0; i--) {
         const hasVerticalScrollbar = scrollable.scrollHeight > scrollable.clientHeight;
@@ -421,4 +433,25 @@ function startTextSelectionExperience() {
     highlightRandomPhraseSelection();
 
     document.addEventListener('mouseup', selectionChangedHandler);
+
+    startTimer();
+}
+
+function startTimer() {
+	let startTime = null;
+	console.log('start timer');
+
+	function loop(timestamp) {
+		if (!startTime)
+			startTime = timestamp;
+
+		elapsed = timestamp - startTime;
+		document.getElementById('text-top-left').innerText = (elapsed / 1000).toFixed(2);
+		if ((EXPERIENCE_NAME == "Scroll" && successfulClicks >= MAX_SCROLL_TRIALS) || (EXPERIENCE_NAME == "Text Selection" && successfulClicks >= MAX_SELECTION_TRIALS)) {
+			console.log('stop timer');
+			return;
+		}
+		window.requestAnimationFrame(loop);
+	}
+	window.requestAnimationFrame(loop);
 }

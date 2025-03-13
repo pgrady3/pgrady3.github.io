@@ -105,10 +105,14 @@
 
     <div class="start-screen" id="start-screen">
         <div class="start-controls">
-            <p id="start-title"></p>
-            <p id="start-explanation"></p>
+            <p id="start-title" style="display: none;"></p>
+            <p id="start-explanation" style="display: none;"></p>
             <button id="start-button" onclick="startScrollExperience()">Start</button>
         </div>
+
+        <div class="start-controls">
+			<p id="start-text" style="font-size: 1.5rem"></p>
+		</div>
     </div>
     <script type="text/javascript">
         const EXPERIENCE_NAME = "Scroll";

@@ -8,8 +8,8 @@ let SCREEN_AREA_USED = 0.9;    // Area of the screen which is used by the experi
 let BUTTON_RESPAWN_MAX_RAD = 0.5;     // Max distance to the new button, in viewport width
 const HOLD_DURATION_MS = 1000;
 const MOVE_INTERVAL_TIMER_MS = 3000;
-const MAX_SCROLL_TRIALS = 2;
-const MAX_SELECTION_TRIALS = 2;
+const MAX_SCROLL_TRIALS = 6;
+const MAX_SELECTION_TRIALS = 6;
 
 let timer;
 let backgroundTimer;
@@ -22,6 +22,7 @@ let successChimes = [];
 let errorChime;
 let rng;
 let elapsed = 0;
+let trialNum = 1;
 
 class RandomGenerator {
     constructor(seed) {
@@ -257,6 +258,10 @@ function highlightRandomPhraseScroll() {
 
         document.getElementById('scroll-body').removeEventListener('scroll', onScrollCallback);
 
+        let startText = document.getElementById('start-text');
+        let elapsedStr = (elapsed / 1000).toFixed(2)
+        startText.innerText = `Trial: ${trialNum}, Time: ${elapsedStr}s\n` + startText.innerText;
+        trialNum += 1;
     }
 }
 
@@ -393,6 +398,11 @@ function selectionChangedHandler() {
             //removeHighlight();
 
             document.removeEventListener('mouseup', selectionChangedHandler);
+
+            let startText = document.getElementById('start-text');
+            let elapsedStr = (elapsed / 1000).toFixed(2)
+            startText.innerText = `Trial: ${trialNum}, Time: ${elapsedStr}s\n` + startText.innerText;
+            trialNum += 1;
         }
     }
 }

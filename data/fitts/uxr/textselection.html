@@ -74,7 +74,7 @@
     <div class="start-screen" id="start-screen">
         <div class="start-controls">
             <p id="start-title" style="display: none;"></p>
-            <p id="start-explanation" style="display: none;"></p>
+            <p id="start-explanation"></p>
             <button id="start-button" onclick="startTextSelectionExperience()">Start</button>
         </div>
 
@@ -84,7 +84,7 @@
     </div>
     <script type="text/javascript">
         const EXPERIENCE_NAME = "Text Selection";
-        const EXPLANATION = 'Use the cursor to select the highlighted text.';
+        const EXPLANATION = 'Note: one character of slop is allowed <br/>on either side of your selection.';
         setExperienceTitle(EXPERIENCE_NAME, EXPLANATION);
     </script>
 

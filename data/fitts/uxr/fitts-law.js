@@ -333,6 +333,9 @@ function endExperience() {
 	let idStr = fittsID.toFixed(2)
 	let numTargets = fittsTest.currentCount - 1
 	startText.innerText = `Trial:${trialNum}, Condition: ${conditionSelect.value}, Time: ${elapsedStr}s, ID: ${idStr}\n` + startText.innerText;
+
+	submitForm(trialNum, conditionSelect.value, idStr, elapsedStr);
+
 	trialNum += 1;
 
 	// init code
@@ -343,6 +346,85 @@ function endExperience() {
 	timer.innerText = "";
 	testAreaSVG.selectAll('line').remove(); // remove all cursor trails
 	//fittsTest.advanceParams();
+}
+
+// function submitForm(trial, condition, id, ttc) {
+// 	// Get the form elements
+// 	const form = document.getElementById('bootstrapForm');
+
+// 	form.addEventListener('submit', (e) => {
+// 		e.preventDefault(); // Prevent default form submission behavior
+// 		const formData = new FormData(form);
+// 		fetch(form.action, {
+// 			method: 'POST',
+// 			body: formData,
+// 			mode: 'no-cors' // Google Forms requires no-cors mode
+// 		})
+// 		.then(() => {
+// 			console.log('Form submitted successfully');
+// 			// You can add additional logic here, like displaying a success message
+// 		})
+// 		.catch((error) => {
+// 			console.error('Error submitting form:', error);
+// 			// Handle any errors that occur during submission
+// 		});
+// 	});
+
+// 	const deviceOSInput = document.getElementById('1366025332');
+// 	const deviceBrowserInput = document.getElementById('1979876681');
+// 	const trialNumberInput = document.getElementById('1116494097');
+// 	const conditionNumberInput = document.getElementById('314909039');
+// 	const indexOfDifficultyInput = document.getElementById('1603410657');
+// 	const timeToCompleteInput = document.getElementById('1300493740');
+// 	// Populate the form fields
+// 	deviceOSInput.value = navigator.platform; // or navigator.userAgentData.platform for more detailed info (Chrome only)
+// 	deviceBrowserInput.value = navigator.userAgent; // This will give a string containing info about the browser
+// 	trialNumberInput.value = trial;
+// 	conditionNumberInput.value = condition;
+// 	indexOfDifficultyInput.value = id;
+// 	timeToCompleteInput.value = ttc;
+// 	// Submit the form programmatically
+// 	form.submit();
+// }
+
+function submitForm(trial, condition, id, ttc) {
+    // Get the form elements
+    const form = document.getElementById('bootstrapForm');
+    if (!form.dataset.submitHandlerAdded) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent default form submission behavior
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                mode: 'no-cors' // Google Forms requires no-cors mode
+            })
+            .then(() => {
+                console.log('Form submitted successfully');
+                // You can add additional logic here, like displaying a success message
+            })
+            .catch((error) => {
+                console.error('Error submitting form:', error);
+                // Handle any errors that occur during submission
+            });
+        });
+        form.dataset.submitHandlerAdded = 'true';
+    }
+    const deviceOSInput = document.getElementById('1366025332');
+    const deviceBrowserInput = document.getElementById('1979876681');
+    const trialNumberInput = document.getElementById('1116494097');
+    const conditionNumberInput = document.getElementById('314909039');
+    const indexOfDifficultyInput = document.getElementById('1603410657');
+    const timeToCompleteInput = document.getElementById('1300493740');
+    // Populate the form fields
+    deviceOSInput.value = navigator.platform;
+    deviceBrowserInput.value = navigator.userAgent;
+    trialNumberInput.value = trial;
+    conditionNumberInput.value = condition;
+    indexOfDifficultyInput.value = id;
+    timeToCompleteInput.value = ttc;
+    // Dispatch a synthetic submit event
+    form.dispatchEvent(new Event('submit', { cancelable: true }));
 }
 
 

@@ -37,80 +37,21 @@
 
 	</div> <!-- container12 end -->
 
-	<form action="https://docs.google.com/forms/d/e/1FAIpQLSeBhiDed65ub35BFt1irK73__qxToY1WTGI8HvSL-SzAG6CSw/formResponse"
-		target="_self"
-		id="bootstrapForm"
-		method="POST"
-		style="display:none;">
-	<fieldset>
-		<h2>Fitts Test UXR Autosubmission<br><small></small></h2>
-	</fieldset>
+	<form
+		action="https://docs.google.com/forms/d/e/1FAIpQLSeBhiDed65ub35BFt1irK73__qxToY1WTGI8HvSL-SzAG6CSw/formResponse"
+		target="_self" id="bootstrapForm" method="POST" style="display:none;">
 
+		<input id="device_os" type="text" name="entry.1366025332">
+		<input id="device_browser" type="text" name="entry.1979876681">
+		<input id="trial_num" type="text" name="entry.1116494097">
+		<input id="condition_num" type="text" name="entry.314909039">
+		<input id="index_of_difficulty" type="text" name="entry.1603410657">
+		<input id="time_to_complete" type="text" name="entry.1300493740">
+		<input type="hidden" name="fvv" value="1">
+		<input type="hidden" name="fbzx" value="-7669294323422573162">
+		<input type="hidden" name="pageHistory" value="0">
 
-	<!-- Field type: "short" id: "1285328804" -->
-	<fieldset>
-		<legend for="1285328804">Device OS</legend>
-		<div class="form-group">
-			<input id="1366025332" type="text" name="entry.1366025332" class="form-control" >
-		</div>
-	</fieldset>
-
-
-	<!-- Field type: "short" id: "429093979" -->
-	<fieldset>
-		<legend for="429093979">Device Browser</legend>
-		<div class="form-group">
-			<input id="1979876681" type="text" name="entry.1979876681" class="form-control" >
-		</div>
-	</fieldset>
-
-
-	<!-- Field type: "short" id: "239045214" -->
-	<fieldset>
-		<legend for="239045214">Trial Number</legend>
-		<div class="form-group">
-			<input id="1116494097" type="text" name="entry.1116494097" class="form-control" >
-		</div>
-	</fieldset>
-
-
-	<!-- Field type: "short" id: "962258130" -->
-	<fieldset>
-		<legend for="962258130">Condition Number</legend>
-		<div class="form-group">
-			<input id="314909039" type="text" name="entry.314909039" class="form-control" >
-		</div>
-	</fieldset>
-
-
-	<!-- Field type: "short" id: "887786552" -->
-	<fieldset>
-		<legend for="887786552">Index of Difficulty</legend>
-		<div class="form-group">
-			<input id="1603410657" type="text" name="entry.1603410657" class="form-control" >
-		</div>
-	</fieldset>
-
-
-	<!-- Field type: "short" id: "128207685" -->
-	<fieldset>
-		<legend for="128207685">Time to Complete</legend>
-		<div class="form-group">
-			<input id="1300493740" type="text" name="entry.1300493740" class="form-control" >
-		</div>
-	</fieldset>
-
-	<input type="hidden" name="fvv" value="1">
-	<input type="hidden" name="fbzx" value="-7669294323422573162">
-	<!--
-		CAVEAT: In multipages (multisection) forms, *pageHistory* field tells to google what sections we've currently completed.
-		This usually starts as "0" for the first page, then "0,1" in the second page... up to "0,1,2..N" in n-th page.
-		Keep this in mind if you plan to change this code to recreate any sort of multipage-feature in your exported form.
-		We're setting this to the total number of pages in this form because we're sending all fields from all the section together.
-	-->
-	<input type="hidden" name="pageHistory" value="0">
-
-	<input class="btn btn-primary" type="submit" value="Submit">
+		<input class="btn btn-primary" type="submit" value="Submit">
 	</form>
 
 </body>

@@ -260,7 +260,7 @@ function highlightRandomPhraseScroll() {
 
         let startText = document.getElementById('start-text');
         let elapsedStr = (elapsed / 1000).toFixed(2)
-        startText.innerText = `Trial: ${trialNum}, Time: ${elapsedStr}s\n` + startText.innerText;
+        startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s\n` + startText.innerText;
         submitForm(trialNum, elapsedStr);
         trialNum += 1;
     }
@@ -401,7 +401,7 @@ function selectionChangedHandler() {
 
             let startText = document.getElementById('start-text');
             let elapsedStr = (elapsed / 1000).toFixed(2)
-            startText.innerText = `Trial: ${trialNum}, Time: ${elapsedStr}s\n` + startText.innerText;
+            startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s\n` + startText.innerText;
             submitForm(trialNum, elapsedStr);
 
             trialNum += 1;

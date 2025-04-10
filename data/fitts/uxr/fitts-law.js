@@ -332,7 +332,7 @@ function endExperience() {
 	let elapsedStr = (elapsed / 1000).toFixed(2)
 	let idStr = fittsID.toFixed(2)
 	let numTargets = fittsTest.currentCount - 1
-	startText.innerText = `T:${trialNum}, C:${conditionSelect.value}, TTC:${elapsedStr}s, ID: ${idStr}\n` + startText.innerText;
+	startText.innerText = `#${trialNum}, C:${conditionSelect.value}, TTC:${elapsedStr}s, ID: ${idStr}\n` + startText.innerText;
 
 	submitForm(trialNum, conditionSelect.value, idStr, elapsedStr);
 

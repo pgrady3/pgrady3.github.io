@@ -332,7 +332,7 @@ function endExperience() {
 	let elapsedStr = (elapsed / 1000).toFixed(2)
 	let idStr = fittsID.toFixed(2)
 	let numTargets = fittsTest.currentCount - 1
-	startText.innerText = `Trial:${trialNum}, Condition: ${conditionSelect.value}, Time: ${elapsedStr}s, ID: ${idStr}\n` + startText.innerText;
+	startText.innerText = `T:${trialNum}, C:${conditionSelect.value}, TTC:${elapsedStr}s, ID: ${idStr}\n` + startText.innerText;
 
 	submitForm(trialNum, conditionSelect.value, idStr, elapsedStr);
 
@@ -373,6 +373,7 @@ function submitForm(trial, condition, id, ttc) {
     // Populate the form fields
     document.getElementById('device_os').value = navigator.platform;
     document.getElementById('device_browser').value = navigator.userAgent;
+    document.getElementById('participant_id').value = document.getElementById('button-pad-id').value;
     document.getElementById('trial_num').value = trial;
     document.getElementById('condition_num').value = condition;
     document.getElementById('index_of_difficulty').value = id;
@@ -382,5 +383,19 @@ function submitForm(trial, condition, id, ttc) {
     form.dispatchEvent(new Event('submit', { cancelable: true }));
 }
 
+function initButtonPad() {
+    const participantIdInput = document.getElementById('button-pad-id');
+    const buttons = document.querySelectorAll('.button-pad button');
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            if (button.textContent === 'C') {
+                participantIdInput.value = '';
+            } else if (participantIdInput.value.length < 2) {
+                participantIdInput.value += button.textContent;
+            }
+        });
+    });
+}
 
+window.addEventListener('load', initButtonPad);
 startButton.addEventListener('click', startExperience);

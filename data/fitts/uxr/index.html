@@ -15,6 +15,32 @@
 <body>
 	<div class="start-screen" id="start-screen">
 		<div class="start-controls">
+			<div class="button-pad">
+				<input type="text" id="button-pad-id" placeholder="ID #" disabled>
+				<div class="row">
+					<button>1</button>
+					<button>2</button>
+					<button>3</button>
+				</div>
+				<div class="row">
+					<button>4</button>
+					<button>5</button>
+					<button>6</button>
+				</div>
+				<div class="row">
+					<button>7</button>
+					<button>8</button>
+					<button>9</button>
+				</div>
+				<div class="row">
+					<button class="hidden-button">H</button>
+					<button>0</button>
+					<button>C</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="start-controls">
 			<select name="condition" id="condition">
 				<option value="1">Condition: 1</option>
 				<option value="2">Condition: 2</option>
@@ -43,6 +69,7 @@
 
 		<input id="device_os" type="text" name="entry.1366025332">
 		<input id="device_browser" type="text" name="entry.1979876681">
+		<input id="participant_id" type="text" name="entry.1761654424">
 		<input id="trial_num" type="text" name="entry.1116494097">
 		<input id="condition_num" type="text" name="entry.314909039">
 		<input id="index_of_difficulty" type="text" name="entry.1603410657">

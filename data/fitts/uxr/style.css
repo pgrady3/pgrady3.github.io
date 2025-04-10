@@ -34,6 +34,7 @@ strong {
 	font-weight: 600;
 	font-size: 0.91em;
 }
+
 .sans {
 	font-weight: 700;
 	font-size: 0.8em;
@@ -64,10 +65,10 @@ hr {
 
 div.msg {
 	width: 200px;
-/*	height: 40px;*/
+	/*	height: 40px;*/
 	position: fixed;
 	top: 10px;
-	left:50%;
+	left: 50%;
 	margin-left: -100px;
 	background-color: #FFE736;
 	border-radius: 10px;
@@ -89,14 +90,14 @@ div.math {
 
 line {
 	stroke: black;
-/*	shape-rendering: crispEdges;*/
+	/*	shape-rendering: crispEdges;*/
 }
 
 .back {
 	fill: #ededed;
 	stroke: #000;
 	stroke-width: 2px;
-  	shape-rendering: crispEdges;
+	shape-rendering: crispEdges;
 }
 
 #plot-scatter circle {
@@ -104,15 +105,16 @@ line {
 	opacity: 0.5;
 }
 
-.axis path, .axis line {
-  fill: none;
-  stroke: #ccc;
-  shape-rendering: crispEdges;
+.axis path,
+.axis line {
+	fill: none;
+	stroke: #ccc;
+	shape-rendering: crispEdges;
 }
 
 path {
-  fill: none;
-  stroke: #000;
+	fill: none;
+	stroke: #000;
 }
 
 circle.iso {
@@ -120,7 +122,8 @@ circle.iso {
 	opacity: 0.5;
 }
 
-.start-screen, .experience-screen {
+.start-screen,
+.experience-screen {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -129,7 +132,8 @@ circle.iso {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin-bottom: 200px; /* adjust the value as needed */
+	margin-bottom: 200px;
+	/* adjust the value as needed */
 }
 
 .start-screen button,
@@ -147,6 +151,7 @@ circle.iso {
 .start-controls {
 	display: flex;
 	flex-direction: column;
+    align-items: center;
 }
 
 .timer {
@@ -155,4 +160,40 @@ circle.iso {
 	font-size: 4rem;
 	top: 1rem;
 	left: 1rem;
+}
+
+.button-pad {
+	padding: 3rem;
+}
+
+.button-pad .row {
+    display: flex; /* Use flexbox for the row */
+    justify-content: center; /* Center the buttons horizontally */
+    margin-bottom: 0.1rem;
+}
+
+.button-pad button:hover {
+    background-color: #cccccc;
+}
+
+.button-pad button {
+    width: 2rem;
+	height: 2rem;
+	display: inline-flex; /* Use inline-flex to keep buttons inline */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    font-size: 1.5rem;
+	margin: 0.2rem;
+}
+
+#button-pad-id {
+    font-size: 1.5rem;
+	width: 6rem;
+	text-align: center;
+	margin: 0.5rem;
+}
+
+.hidden-button {
+    visibility: hidden; /* Makes the button invisible */
+    pointer-events: none; /* Disables click events */
 }

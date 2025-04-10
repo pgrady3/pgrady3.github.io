@@ -261,6 +261,7 @@ function highlightRandomPhraseScroll() {
         let startText = document.getElementById('start-text');
         let elapsedStr = (elapsed / 1000).toFixed(2)
         startText.innerText = `Trial: ${trialNum}, Time: ${elapsedStr}s\n` + startText.innerText;
+        submitForm(trialNum, elapsedStr);
         trialNum += 1;
     }
 }
@@ -317,7 +318,6 @@ function showUpDownArrows() {
 }
 
 function onScrollCallback() {
-    console.log('Scroll callback');
     // If the highlight is in the target box, wait and check again. If still in, make a new highlight
     clearTimeout(highlightTimeout);
 
@@ -402,6 +402,8 @@ function selectionChangedHandler() {
             let startText = document.getElementById('start-text');
             let elapsedStr = (elapsed / 1000).toFixed(2)
             startText.innerText = `Trial: ${trialNum}, Time: ${elapsedStr}s\n` + startText.innerText;
+            submitForm(trialNum, elapsedStr);
+
             trialNum += 1;
         }
     }
@@ -465,3 +467,52 @@ function startTimer() {
 	}
 	window.requestAnimationFrame(loop);
 }
+
+function submitForm(trial, ttc) {
+    const form = document.getElementById('bootstrapForm');
+
+    if (!form.dataset.submitHandlerAdded) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent redirection to new page
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                mode: 'no-cors' // Google Forms requires no-cors mode
+            })
+            .then(() => {
+                console.log('Form submitted successfully');
+            })
+            .catch((error) => {
+                console.error('Error submitting form:', error);
+            });
+        });
+        form.dataset.submitHandlerAdded = 'true';
+    }
+
+    // Populate the form fields
+    document.getElementById('device_os').value = navigator.platform;
+    document.getElementById('device_browser').value = navigator.userAgent;
+    document.getElementById('participant_id').value = document.getElementById('button-pad-id').value;
+    document.getElementById('trial_num').value = trial;
+    document.getElementById('time_to_complete').value = ttc;
+
+    // Dispatch a synthetic submit event
+    form.dispatchEvent(new Event('submit', { cancelable: true }));
+}
+
+function initButtonPad() {
+    const participantIdInput = document.getElementById('button-pad-id');
+    const buttons = document.querySelectorAll('.button-pad button');
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            if (button.textContent === 'C') {
+                participantIdInput.value = '';
+            } else if (participantIdInput.value.length < 2) {
+                participantIdInput.value += button.textContent;
+            }
+        });
+    });
+}
+
+window.addEventListener('load', initButtonPad);

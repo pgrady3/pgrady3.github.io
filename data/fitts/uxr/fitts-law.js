@@ -64,7 +64,9 @@ var fittsTest = {
 
 	active: false,
 
-	data: [],
+	clickHistory: [],
+	lastIDe: 0,
+	lastTP: 0,
 
 	colour: d3.scale.category10(),
 
@@ -144,6 +146,11 @@ var fittsTest = {
 				startTimer();
 				this.active = true;
 			}
+
+			this.addDataPoint({start: this.start,
+				target: this.target,
+				path: this.currentPath,
+				hit: {x: x, y: y, t: (new Date).getTime()}});
 
 			this.currentCount++;
 			this.currentPosition = (this.currentPosition + Math.ceil(this.isoPositions.length/2)) % this.isoPositions.length;
@@ -225,10 +232,30 @@ var fittsTest = {
 		// this.isoParams.distance = Math.floor(randomAB(this.isoLimits.minD, this.isoLimits.maxD));
 		// this.isoParams.width = Math.floor(randomAB(this.isoLimits.minW, this.isoLimits.maxW));
 
+		this.clickHistory = []
+
 		fittsID = Math.log2(distance / width + 1);
 		console.log(`dist ${distance} width ${width} fitts id ${fittsID}`);
 
 		this.updateISOCircles();
+	},
+
+	addDataPoint: function(in_click) {
+		// add point to data array for plotting into ID/time scatter plot
+		if (this.active == false)
+			return;
+
+		var dt = in_click.hit.t - in_click.start.t;
+
+		if (dt < 10000)  // skip if obvious outlier
+		{
+			var dist = distance(in_click.target, in_click.start);
+			var id = shannon(dist, in_click.target.w);
+
+			this.clickHistory.push({time: dt, distance: in_click.target.distance, width: in_click.target.w, hit: in_click.hit,
+				start: in_click.start, target: in_click.target, path: in_click.path});
+			console.log(`id ${id} dt ${dt} dist ${dist}`);
+		}
 	},
 };
 
@@ -257,6 +284,77 @@ function distance(a, b) {
 function clampInt(lower, upper, x) {
 	return Math.min(upper, Math.max(lower, Math.floor(x)));
 }
+
+function shannon(A, W) {
+	return Math.log(A / W + 1) / Math.log(2);
+}
+
+function project(A, B, p) {
+	/**
+	 * Project a point q onto the line p0-p1
+	 * Code taken from: http://www.alecjacobson.com/weblog/?p=1486
+	 */
+	var AB = minus(B, A);
+	var AB_squared = dot(AB, AB);
+	if (AB_squared == 0) {
+		return A;
+	}
+	else {
+		var Ap = minus(p, A);
+		var t = dot(Ap, AB) / AB_squared;
+		return {x: A.x + t * AB.x,
+				y: A.y + t * AB.y,
+				t: t};
+	}
+}
+
+function dot(a, b) {
+	return (a.x * b.x) + (a.y * b.y);
+}
+
+// coutesy of http://stackoverflow.com/questions/3461453/determine-which-side-of-a-line-a-point-lies
+function isLeft(A, B, p){
+     return ((B.x - A.x)*(p.y - A.y) - (B.y - A.y)*(p.x - A.x)) >= 0 ? 1: -1;
+}
+
+function minus(a, b) {
+	return {x: a.x - b.x, y: a.y - b.y};
+}
+
+function sign(a) {
+	return a >=0 ? 1 : -1;
+}
+
+// _empirical_ covariance
+function cov(data, extractorA, extractorB) {
+
+	if (data.length <= 1) { // no covariance for 0 or 1 element.
+		return 0;
+	}
+
+	var mA = mean(data, extractorA);
+	var mB = mean(data, extractorB);
+
+	var cov = 0;
+	for (var i = 0; i < data.length; i++) {
+		cov += (extractorA(data[i]) - mA) * (extractorB(data[i]) - mB);
+	}
+
+	return cov / (data.length - 1);
+}
+
+function variance(data, extractor) {
+	return cov(data, extractor, extractor);
+}
+
+function mean(data, extractor) {
+	var sum = 0;
+	for (var i = 0; i < data.length; i++) {
+		sum += extractor(data[i]);
+	}
+	return sum / data.length;
+}
+
 
 function bgRect(d, dim) {
 	return d.append('rect')
@@ -329,12 +427,79 @@ function endExperience() {
 	experienceScreen.style.display = "none";
 	startScreen.style.display = "";
 
+	// Compute IDe
+	var groups = [];
+	for (var i = 0; i < fittsTest.clickHistory.length; i++) { // for each datum
+		var datum = fittsTest.clickHistory[i];
+		var groupID = datum.distance.toString() + datum.width.toString();
+		if (!groups[groupID]) {
+			groups[groupID] = [];
+		}
+
+		var q = project(datum.start, datum.target, datum.hit);
+		var x = distance(q, datum.start) * sign(q.t);
+		var y = distance(q, datum.hit) * isLeft(datum.start, datum.target, datum.hit);
+
+		datum.realDistance = distance(datum.start, datum.hit); // use real distance here.
+		datum.projectedHitOffsetX = distance(q, datum.target) * sign(q.t - 1);
+		datum.projectedHitOffsetY = y;
+		// datum.hitOffset = distance(datum.target, datum.hit);
+
+		// console.log(`i ${i} realD ${datum.realDistance} hitD ${datum.hitOffset}`);
+
+		groups[groupID].push(datum);
+	}
+
+	var newData = [];
+	for (var group in groups) {
+		var thisGroup = groups[group];
+		if (thisGroup.length < 3) { // exlcude groups with length < 3
+			continue;
+		}
+
+		var xEffective = 4.133 * Math.sqrt(variance(thisGroup, function(d) { return d.projectedHitOffsetX; }))
+		var yEffective = 4.133 * Math.sqrt(variance(thisGroup, function(d) { return d.projectedHitOffsetY; }))
+		var We = Math.min(xEffective, yEffective); // SMALLER-OF model (MacKenzie, Buxton 92)
+
+		// var eEffective = 4.133 * Math.sqrt(variance(thisGroup, function(d) { return d.hitOffset; }))
+		// var We = eEffective * 2
+
+
+		var dEffective = mean(thisGroup, function(d) { return d.realDistance; });
+
+		var De = dEffective;
+		var IDe = shannon(De, We);
+		console.log(`We ${We} De ${De} IDe ${IDe} xeff ${xEffective} yeff ${yEffective} deff ${dEffective}`);
+		// console.log(`We ${We} De ${De} IDe ${IDe} eeff ${eEffective} deff ${dEffective}`);
+
+		var totalThroughput = 0;
+		var totalTime = 0;
+		for (var i = 0; i < thisGroup.length; i++) {
+			var datum = thisGroup[i];
+			datum.IDe = IDe;
+			datum.throughput = 1000 * (datum.IDe/datum.time);
+			// console.log(`i ${i} throughput ${datum.throughput}`);
+			totalThroughput += datum.throughput;
+			totalTime += datum.time;
+			newData.push(datum);
+		}
+		var averageThroughput = totalThroughput / thisGroup.length;
+		console.log(`Average throughput: ${averageThroughput} totaltime ${totalTime}`);
+		fittsTest.lastIDe = IDe;
+		fittsTest.lastTP = averageThroughput;
+	}
+
 	let elapsedStr = (elapsed / 1000).toFixed(2)
 	let idStr = fittsID.toFixed(2)
+	let ideStr = fittsTest.lastIDe.toFixed(2)
+	let tpStr = fittsTest.lastTP.toFixed(2)
 	let numTargets = fittsTest.currentCount - 1
-	startText.innerText = `#${trialNum}, C:${conditionSelect.value}, TTC:${elapsedStr}s, ID: ${idStr}\n` + startText.innerText;
 
-	submitForm(trialNum, conditionSelect.value, idStr, elapsedStr);
+
+
+	startText.innerText = `#${trialNum} C:${conditionSelect.value} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr}\n` + startText.innerText;
+
+	submitForm(trialNum, conditionSelect.value, idStr, ideStr, tpStr, elapsedStr);
 
 	trialNum += 1;
 
@@ -348,7 +513,7 @@ function endExperience() {
 	//fittsTest.advanceParams();
 }
 
-function submitForm(trial, condition, id, ttc) {
+function submitForm(trial, condition, id, ide, tp, ttc) {
     const form = document.getElementById('bootstrapForm');
 
     if (!form.dataset.submitHandlerAdded) {
@@ -377,6 +542,8 @@ function submitForm(trial, condition, id, ttc) {
     document.getElementById('trial_num').value = trial;
     document.getElementById('condition_num').value = condition;
     document.getElementById('index_of_difficulty').value = id;
+    document.getElementById('effective_id').value = ide;
+    document.getElementById('throughput').value = tp;
     document.getElementById('time_to_complete').value = ttc;
 
     // Dispatch a synthetic submit event

@@ -835,10 +835,12 @@ window.onload = function() {
         // Draw the angle
         context.lineWidth = 2;
         context.strokeStyle = "#0000ff";
+        context.setLineDash([5, 5]); // Set dash pattern: 5 units on, 5 units off
         context.beginPath();
         context.moveTo(centerx, centery);
-        context.lineTo(centerx + 1.5*level.tilewidth * Math.cos(degToRad(player.angle)), centery - 1.5*level.tileheight * Math.sin(degToRad(player.angle)));
+        context.lineTo(centerx + 2.5*level.tilewidth * Math.cos(degToRad(player.angle)), centery - 2.5*level.tileheight * Math.sin(degToRad(player.angle)));
         context.stroke();
+        context.setLineDash([]); // Reset dash pattern to solid line for subsequent drawings
 
         // Draw the next bubble
         drawBubble(player.nextbubble.x, player.nextbubble.y, player.nextbubble.tiletype);

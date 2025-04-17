@@ -49,6 +49,30 @@ function v(v) {
 	return colour;
 };
 
+// Add counters for clicks on target and total clicks
+var totalClicks = 0;
+var clicksOnTarget = 0;
+
+/**
+ * Updates the count of total clicks and clicks on the target.
+ * @param {boolean} hit Whether the click was on the target.
+ */
+function updateClickCounts(hit) {
+    totalClicks++;
+    if (hit) {
+        clicksOnTarget++;
+    }
+    console.log(`Total Clicks: ${totalClicks}, Clicks on Target: ${clicksOnTarget}`);
+}
+
+/**
+ * Resets the click counters.
+ */
+function resetClickCounts() {
+    totalClicks = 0;
+    clicksOnTarget = 0;
+    console.log("Click counts have been reset.");
+}
 
 var fittsTest = {
 	target: {x: 0, y: 0, r: 10},
@@ -63,6 +87,9 @@ var fittsTest = {
 	isoParams: {num: 9, distance: 200, width: 50, randomize: true},
 
 	active: false,
+
+	clicksTotal: 0,
+	clicksOnTarget: 0,
 
 	clickHistory: [],
 	lastIDe: 0,
@@ -139,8 +166,13 @@ var fittsTest = {
 				.remove();
 	},
 
+	
+
 	mouseClicked: function(x, y) {
-		if (distance({x: x, y: y}, this.target) < (this.target.w / 2)) {
+		var isHit = distance({ x: x, y: y }, this.target) < (this.target.w / 2);
+		updateClickCounts(isHit); // Update the click counts
+
+		if (isHit) {
 			if (!this.active) {
 				console.log('start active');
 				startTimer();
@@ -545,6 +577,10 @@ function submitForm(trial, condition, id, ide, tp, ttc) {
     document.getElementById('effective_id').value = ide;
     document.getElementById('throughput').value = tp;
     document.getElementById('time_to_complete').value = ttc;
+	
+    // Add clicksTotal and clicksOnTarget to the form
+    document.getElementById('clicks_total').value = fittsTest.clicksTotal; // Total clicks
+    document.getElementById('clicks_on_target').value = fittsTest.clicksOnTarget; // Clicks on target
 
     // Dispatch a synthetic submit event
     form.dispatchEvent(new Event('submit', { cancelable: true }));
@@ -566,3 +602,4 @@ function initButtonPad() {
 
 window.addEventListener('load', initButtonPad);
 startButton.addEventListener('click', startExperience);
+

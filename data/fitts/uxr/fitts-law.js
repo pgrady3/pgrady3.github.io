@@ -435,7 +435,7 @@ function startExperience() {
 		fittsTest.advanceParams(300, 75);
 	}
 	else if (condition === '2') {
-		fittsTest.advanceParams(300, 50);
+		fittsTest.advanceParams(300, 38);
 	}
 	else if (condition === '3') {
 		fittsTest.advanceParams(300, 20);

@@ -49,31 +49,6 @@ function v(v) {
 	return colour;
 };
 
-// Add counters for clicks on target and total clicks
-var totalClicks = 0;
-var clicksOnTarget = 0;
-
-/**
- * Updates the count of total clicks and clicks on the target.
- * @param {boolean} hit Whether the click was on the target.
- */
-function updateClickCounts(hit) {
-    totalClicks++;
-    if (hit) {
-        clicksOnTarget++;
-    }
-    console.log(`Total Clicks: ${totalClicks}, Clicks on Target: ${clicksOnTarget}`);
-}
-
-/**
- * Resets the click counters.
- */
-function resetClickCounts() {
-    totalClicks = 0;
-    clicksOnTarget = 0;
-    console.log("Click counts have been reset.");
-}
-
 var fittsTest = {
 	target: {x: 0, y: 0, r: 10},
 	start: {x: 0, y: 0, t: 0},
@@ -170,9 +145,11 @@ var fittsTest = {
 
 	mouseClicked: function(x, y) {
 		var isHit = distance({ x: x, y: y }, this.target) < (this.target.w / 2);
-		updateClickCounts(isHit); // Update the click counts
+		this.clicksTotal++;
+		//updateClickCounts(isHit); // Update the click counts
 
 		if (isHit) {
+			this.clicksOnTarget++;
 			if (!this.active) {
 				console.log('start active');
 				startTimer();
@@ -521,17 +498,17 @@ function endExperience() {
 		fittsTest.lastTP = averageThroughput;
 	}
 
-	let elapsedStr = (elapsed / 1000).toFixed(2)
-	let idStr = fittsID.toFixed(2)
-	let ideStr = fittsTest.lastIDe.toFixed(2)
-	let tpStr = fittsTest.lastTP.toFixed(2)
-	let numTargets = fittsTest.currentCount - 1
+	let elapsedStr = (elapsed / 1000).toFixed(2);
+	let idStr = fittsID.toFixed(2);
+	let ideStr = fittsTest.lastIDe.toFixed(2);
+	let tpStr = fittsTest.lastTP.toFixed(2);
+	let numTargets = fittsTest.currentCount - 1;
+	let ct = fittsTest.clicksTotal;
+	let cot = fittsTest.clicksOnTarget;
 
+	startText.innerText = `#${trialNum} C:${conditionSelect.value} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr}\n CT:${ct}` + startText.innerText;
 
-
-	startText.innerText = `#${trialNum} C:${conditionSelect.value} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr}\n` + startText.innerText;
-
-	submitForm(trialNum, conditionSelect.value, idStr, ideStr, tpStr, elapsedStr);
+	submitForm(trialNum, conditionSelect.value, idStr, ideStr, tpStr, elapsedStr, ct, cot);
 
 	trialNum += 1;
 
@@ -540,18 +517,23 @@ function endExperience() {
 	fittsTest.currentCount = 0,
 	fittsTest.miss = 0,
 	fittsTest.active = false;
+	fittsTest.clicksTotal = 0; 
+	fittsTest.clicksOnTarget = 0; 
 	timer.innerText = "";
 	testAreaSVG.selectAll('line').remove(); // remove all cursor trails
 	//fittsTest.advanceParams();
 }
 
-function submitForm(trial, condition, id, ide, tp, ttc) {
+function submitForm(trial, condition, id, ide, tp, ttc, ct, cot) {
     const form = document.getElementById('bootstrapForm');
-
+	console.log(form); // Check if `form` is `null`
+	console.log(form.dataset); // This will throw an error if `form` is `null`
     if (!form.dataset.submitHandlerAdded) {
         form.addEventListener('submit', (e) => {
             e.preventDefault(); // Prevent redirection to new page
             const formData = new FormData(form);
+			console.log(formData.body); 
+			console.log(form.action);
             fetch(form.action, {
                 method: 'POST',
                 body: formData,
@@ -568,7 +550,7 @@ function submitForm(trial, condition, id, ide, tp, ttc) {
     }
 
     // Populate the form fields
-    document.getElementById('device_os').value = navigator.platform;
+    document.getElementById('device_os').value = navigator.userAgentData.platform
     document.getElementById('device_browser').value = navigator.userAgent;
     document.getElementById('participant_id').value = document.getElementById('button-pad-id').value;
     document.getElementById('trial_num').value = trial;
@@ -579,8 +561,8 @@ function submitForm(trial, condition, id, ide, tp, ttc) {
     document.getElementById('time_to_complete').value = ttc;
 	
     // Add clicksTotal and clicksOnTarget to the form
-    document.getElementById('clicks_total').value = fittsTest.clicksTotal; // Total clicks
-    document.getElementById('clicks_on_target').value = fittsTest.clicksOnTarget; // Clicks on target
+    document.getElementById('clicks_total').value = ct; // Total clicks
+    document.getElementById('clicks_on_target').value = cot; // Clicks on target
 
     // Dispatch a synthetic submit event
     form.dispatchEvent(new Event('submit', { cancelable: true }));

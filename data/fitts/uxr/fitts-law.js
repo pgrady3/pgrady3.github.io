@@ -141,7 +141,7 @@ var fittsTest = {
 				.remove();
 	},
 
-	
+
 
 	mouseClicked: function(x, y) {
 		var isHit = distance({ x: x, y: y }, this.target) < (this.target.w / 2);
@@ -517,8 +517,8 @@ function endExperience() {
 	fittsTest.currentCount = 0,
 	fittsTest.miss = 0,
 	fittsTest.active = false;
-	fittsTest.clicksTotal = 0; 
-	fittsTest.clicksOnTarget = 0; 
+	fittsTest.clicksTotal = 0;
+	fittsTest.clicksOnTarget = 0;
 	timer.innerText = "";
 	testAreaSVG.selectAll('line').remove(); // remove all cursor trails
 	//fittsTest.advanceParams();
@@ -526,14 +526,10 @@ function endExperience() {
 
 function submitForm(trial, condition, id, ide, tp, ttc, ct, cot) {
     const form = document.getElementById('bootstrapForm');
-	console.log(form); // Check if `form` is `null`
-	console.log(form.dataset); // This will throw an error if `form` is `null`
     if (!form.dataset.submitHandlerAdded) {
         form.addEventListener('submit', (e) => {
             e.preventDefault(); // Prevent redirection to new page
             const formData = new FormData(form);
-			console.log(formData.body); 
-			console.log(form.action);
             fetch(form.action, {
                 method: 'POST',
                 body: formData,
@@ -550,7 +546,7 @@ function submitForm(trial, condition, id, ide, tp, ttc, ct, cot) {
     }
 
     // Populate the form fields
-    document.getElementById('device_os').value = navigator.userAgentData.platform
+    document.getElementById('device_os').value = navigator.platform;
     document.getElementById('device_browser').value = navigator.userAgent;
     document.getElementById('participant_id').value = document.getElementById('button-pad-id').value;
     document.getElementById('trial_num').value = trial;
@@ -559,7 +555,7 @@ function submitForm(trial, condition, id, ide, tp, ttc, ct, cot) {
     document.getElementById('effective_id').value = ide;
     document.getElementById('throughput').value = tp;
     document.getElementById('time_to_complete').value = ttc;
-	
+
     // Add clicksTotal and clicksOnTarget to the form
     document.getElementById('clicks_total').value = ct; // Total clicks
     document.getElementById('clicks_on_target').value = cot; // Clicks on target
@@ -584,4 +580,3 @@ function initButtonPad() {
 
 window.addEventListener('load', initButtonPad);
 startButton.addEventListener('click', startExperience);
-

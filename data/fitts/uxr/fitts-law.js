@@ -417,13 +417,13 @@ function startExperience() {
 	else if (condition === '3') {
 		fittsTest.advanceParams(300, 20);
 	}
+	else if (condition === '4') {
+		fittsTest.advanceParams(60, 20);
+	}
 	else
 	{
 		return
 	}
-	// else if (condition === '4') {
-	// 	fittsTest.advanceParams(250, 100);
-	// }
 	// else if (condition === '5') {
 	// 	fittsTest.advanceParams(150, 100);
 	// }

@@ -66,6 +66,9 @@ var fittsTest = {
 	clicksTotal: 0,
 	clicksOnTarget: 0,
 
+	targetEntries: 1, // test doesnt start until the first click so we add one here
+	isInsideTarget: false,
+
 	clickHistory: [],
 	lastIDe: 0,
 	lastTP: 0,
@@ -186,39 +189,23 @@ var fittsTest = {
 
 	mouseMoved: function(x, y) {
 		if (this.active) {
-			// skip if the mouse did actually not move
-			// that should practically never happen...
+			// Skip if the mouse did not move
 			if (x == this.last.x && y == this.last.y) {
 				return;
 			}
-
-			// Skip for the first frame (we dont have last frame)
-			if (Object.keys(this.last).length === 0) {
-				return;
+	
+			// Check if the mouse is inside the target area
+			const isInsideTarget = distance({ x: x, y: y }, this.target) < (this.target.w / 2);
+	
+			if (isInsideTarget && !this.isInsideTarget) {
+				this.targetEntries++; // Increment target entry count
+				this.isInsideTarget = true; // Mark as inside target
+				console.log("Target entered: " + this.targetEntries);
+			} else if (!isInsideTarget) {
+				this.isInsideTarget = false; // Reset flag when the user exits the target
 			}
-
-			var newPoint = {x: x, y: y, t: (new Date).getTime()}
-
-			var dt = newPoint.t - this.last.t;
-			var dist = distance(this.last, {x: x, y: y})
-			if (dt > 0)
-				var speed = dist / dt;
-			else
-				var speed = 0;
-
-			// testAreaSVG.append('line')
-			// 	// .attr('class', '')
-			// 	.attr('x1', this.last.x)
-			// 	.attr('x2', newPoint.x)
-			// 	.attr('y1', this.last.y)
-			// 	.attr('y2', newPoint.y)
-			// 	.style('stroke', v(speed))
-			// 	.transition()
-			// 		.duration(5000)
-			// 		.style('stroke-opacity', 0)
-			// 		.remove();
-
-			this.last = newPoint;
+	
+			this.last = { x: x, y: y, t: (new Date).getTime() };
 		}
 	},
 
@@ -505,10 +492,11 @@ function endExperience() {
 	let numTargets = fittsTest.currentCount - 1;
 	let ct = fittsTest.clicksTotal;
 	let cot = fittsTest.clicksOnTarget;
+	let te = fittsTest.targetEntries; 
 
-	startText.innerText = `#${trialNum} C:${conditionSelect.value} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr}\n CT:${ct}` + startText.innerText;
+	startText.innerText = `#${trialNum} C:${conditionSelect.value} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr}\n CT:${ct} TE:${te}` + startText.innerText;
 
-	submitForm(trialNum, conditionSelect.value, idStr, ideStr, tpStr, elapsedStr, ct, cot);
+	submitForm(trialNum, conditionSelect.value, idStr, ideStr, tpStr, elapsedStr, ct, cot, te);
 
 	trialNum += 1;
 
@@ -519,12 +507,14 @@ function endExperience() {
 	fittsTest.active = false;
 	fittsTest.clicksTotal = 0;
 	fittsTest.clicksOnTarget = 0;
+	fittsTest.targetEntries = 1; 
+	fittsTest.isInsideTarget = false; 
 	timer.innerText = "";
 	testAreaSVG.selectAll('line').remove(); // remove all cursor trails
 	//fittsTest.advanceParams();
 }
 
-function submitForm(trial, condition, id, ide, tp, ttc, ct, cot) {
+function submitForm(trial, condition, id, ide, tp, ttc, ct, cot, te) {
     const form = document.getElementById('bootstrapForm');
     if (!form.dataset.submitHandlerAdded) {
         form.addEventListener('submit', (e) => {
@@ -559,6 +549,9 @@ function submitForm(trial, condition, id, ide, tp, ttc, ct, cot) {
     // Add clicksTotal and clicksOnTarget to the form
     document.getElementById('clicks_total').value = ct; // Total clicks
     document.getElementById('clicks_on_target').value = cot; // Clicks on target
+
+	// Add target entires to the form
+	document.getElementById('target_entries').value = te; 
 
     // Dispatch a synthetic submit event
     form.dispatchEvent(new Event('submit', { cancelable: true }));

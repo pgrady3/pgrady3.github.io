@@ -31,6 +31,11 @@ var elapsed = 0;
 var fittsID = 0;
 var trialNum = 1;
 
+// Variables for tracking movement
+let isMoving = false; // Tracks if the mouse is currently moving
+let dragCount = 0;    // Counter for start-stop movements
+let stopTimeout;      // Timer to detect when the mouse stops
+
 const experienceScreen = document.getElementById('experience-screen');
 const startScreen = document.getElementById('start-screen');
 const startButton = document.getElementById('start-button');
@@ -42,7 +47,31 @@ function rHit(r, rTarget) {
 	return ((plotHitsDimension.innerWidth / 2) / rTarget) * r;
 };
 
+// Function to reset drag count and related variables
+function resetTrialData() {
+    isMoving = false;
+    dragCount = 0;
+    clearTimeout(stopTimeout);
+    console.log("Trial data reset. Drag count is now 0.");
+}
 
+// Event listener for mouse movement
+document.addEventListener('mousemove', () => {
+    if (!isMoving) {
+        // Mouse just started moving
+        isMoving = true;
+        dragCount++; // Increment drag count for this new movement
+        console.log(`Drag Count: ${dragCount}`);
+    }
+
+    // Reset the stop timeout for every movement
+    clearTimeout(stopTimeout);
+
+    // Set a timeout to detect when the mouse stops
+    stopTimeout = setTimeout(() => {
+        isMoving = false; // Mouse has stopped
+    }, 100); // Adjust timeout duration as needed
+});
 
 function v(v) {
 	var colour = 'rgb(' + clampInt(0, 255, (v / MAX_SPEED) * 255) + ', 0, 0)';
@@ -392,6 +421,7 @@ function startTimer() {
 }
 
 function startExperience() {
+	resetTrialData(); 
 	let condition = conditionSelect.value;
 	console.log('start experience, condition: ' + condition);
 
@@ -494,7 +524,7 @@ function endExperience() {
 	let cot = fittsTest.clicksOnTarget;
 	let te = fittsTest.targetEntries; 
 
-	startText.innerText = `#${trialNum} C:${conditionSelect.value} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr}\n CT:${ct} TE:${te}` + startText.innerText;
+	startText.innerText = `#${trialNum} C:${conditionSelect.value} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr} CT:${ct} TE:${te}\n` + startText.innerText;
 
 	submitForm(trialNum, conditionSelect.value, idStr, ideStr, tpStr, elapsedStr, ct, cot, te);
 
@@ -552,6 +582,9 @@ function submitForm(trial, condition, id, ide, tp, ttc, ct, cot, te) {
 
 	// Add target entires to the form
 	document.getElementById('target_entries').value = te; 
+
+	// Add drag count
+	document.getElementById('drag_count').value = dragCount; 
 
     // Dispatch a synthetic submit event
     form.dispatchEvent(new Event('submit', { cancelable: true }));

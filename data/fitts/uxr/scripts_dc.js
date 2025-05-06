@@ -26,11 +26,12 @@ let trialNum = 1;
 
 class RandomGenerator {
     constructor(seed) {
-      this.seed = seed;
-      this.a = 1664525;
-      this.c = 1013904223;
-      this.m = Math.pow(2, 32);
-      this.x = seed;
+        // If no seed is provided, use Math.random() to generate one
+        this.seed = seed !== undefined ? seed : Math.floor(Math.random() * Math.pow(2, 32));
+        this.a = 1664525;
+        this.c = 1013904223;
+        this.m = Math.pow(2, 32);
+        this.x = this.seed;
     }
 
     nextInt() {
@@ -188,7 +189,7 @@ function moveTargetButton() {
 }
 
 function startExperience() {
-    rng = new RandomGenerator(7654321);
+    rng = new RandomGenerator();
     loadChimes();
     successfulClicks = 0;
     moveTargetButton();
@@ -320,6 +321,7 @@ function showUpDownArrows() {
 function onScrollCallback() {
     // If the highlight is in the target box, wait and check again. If still in, make a new highlight
     clearTimeout(highlightTimeout);
+    showUpDownArrows();
 
     if (isHighlightInTargetbox()) {
         highlightTimeout = setTimeout(() => {
@@ -335,7 +337,7 @@ function onScrollCallback() {
 }
 
 function startScrollExperience() {
-    rng = new RandomGenerator(7654321);
+    rng = new RandomGenerator();
     successfulClicks = 0;
     loadChimes();
     document.getElementById('start-screen').style.display = "none";
@@ -351,27 +353,43 @@ function startScrollExperience() {
 
 }
 
+
 function highlightRandomPhraseSelection() {
     let paragraphs = document.querySelectorAll('.selection-text');
-    paragraphs = Array.from(paragraphs)
-    // paragraphs = paragraphs.slice(1, -1);  // remove first and last element
-    const randomParagraph = paragraphs[Math.floor(rng.random() * paragraphs.length)];
-    const paragraphText = randomParagraph.textContent.replace(/\s+/g, ' ').trim();
-    const phrases = paragraphText.split(' ');
-    const randomDistribution = rng.random() * rng.random();   // Make the distribution skewed towards zero
-    const wordCount = Math.floor(randomDistribution * 10) + 3;
-    const startIndex = Math.floor(rng.random() * (phrases.length - wordCount));
-    const endIndex = startIndex + wordCount;
+    paragraphs = Array.from(paragraphs);
+    const lineHeight = parseFloat(window.getComputedStyle(paragraphs[0]).lineHeight);
 
-    const highlight = document.createElement('span');
-    highlight.classList.add('highlight');
+    while (true) {
+        let randomParagraph = paragraphs[Math.floor(rng.random() * paragraphs.length)];
+        let paragraphText = randomParagraph.textContent.replace(/\s+/g, ' ').trim();
+        let phrases = paragraphText.split(' ');
+        let wordCount = Math.floor(rng.random() * 3) + 3;
+        let startIndex = Math.floor(rng.random() * (phrases.length - wordCount));
+        let endIndex = startIndex + wordCount;
+        let highlight = document.createElement('span');
+        highlight.classList.add('highlight');
+        highlight.textContent = phrases.slice(startIndex, endIndex).join(' ');
+        let beforeText = phrases.slice(0, startIndex).join(' ');
+        let afterText = phrases.slice(endIndex).join(' ');
 
-    highlight.textContent = phrases.slice(startIndex, endIndex).join(' ');
-    const beforeText = phrases.slice(0, startIndex).join(' ');
-    const afterText = phrases.slice(endIndex).join(' ');
-    randomParagraph.innerHTML = beforeText + ' ' + highlight.outerHTML + ' ' + afterText
-    console.log('Highlighting phrase: ' + highlight.innerHTML)
+        // Temporarily insert the highlight into the paragraph
+        randomParagraph.innerHTML = beforeText + ' ' + highlight.outerHTML + ' ' + afterText;
+        // Measure the highlight
+        const highlightElement = randomParagraph.querySelector('.highlight');
+        const highlightHeight = highlightElement.getBoundingClientRect().height;
+        console.log('Highlighting phrase: ' + highlight.textContent);
+
+        if (highlightHeight <= lineHeight)
+        {
+            break;
+        }
+        else {
+            // If it doesn't fit, reset the paragraph text
+            randomParagraph.textContent = paragraphText;
+        }
+    }
 }
+
 
 function selectionChangedHandler() {
     const selection = window.getSelection().toString();                    // Get the user's selection
@@ -382,7 +400,7 @@ function selectionChangedHandler() {
 
     const targetText = highlightedClasses.textContent.slice(1, -1);                 // Remove the first and last character to allow overselection
     const indexOfSelection = selection.indexOf(targetText);                          // Check if the user's selection is in the highlighted text
-    console.log(selection.length, targetText.length, indexOfSelection, indexOfSelection + targetText.length);
+    // console.log(selection.length, targetText.length, indexOfSelection, indexOfSelection + targetText.length);
 
     if (indexOfSelection >= 0 && indexOfSelection <= 2 && indexOfSelection + targetText.length + 2 >= selection.length) { // Check if the user's selection is the highlighted text
         console.log('User selected the highlighted text! Getting a new phrase.');
@@ -395,7 +413,7 @@ function selectionChangedHandler() {
             // End experience
             document.getElementById('start-screen').style.display = "";
             document.getElementById('textselection-body').style.display = "none";
-            //removeHighlight();
+            removeHighlight();
 
             document.removeEventListener('mouseup', selectionChangedHandler);
 
@@ -435,7 +453,7 @@ function removeExcessParagraphs() {
 }
 
 function startTextSelectionExperience() {
-    rng = new RandomGenerator(7654321);
+    rng = new RandomGenerator();
     successfulClicks = 0;
     loadChimes();
     document.getElementById('start-screen').style.display = "none";

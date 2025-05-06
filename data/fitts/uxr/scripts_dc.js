@@ -308,12 +308,19 @@ function showUpDownArrows() {
     const targetRect = targetbox.getBoundingClientRect();
     const targetMidpoint = (targetRect.bottom + targetRect.top) / 2;
 
-    if (textRect.top > targetMidpoint) {
+    if (textRect.bottom > targetRect.bottom) {
+        // Text is below target
         document.getElementById('targetarrowup').style.display = "none";
         document.getElementById('targetarrowdown').style.display = "";
     }
-    else {
+    else if (textRect.top < targetRect.top) {
+        // Text is above target
         document.getElementById('targetarrowup').style.display = "";
+        document.getElementById('targetarrowdown').style.display = "none";
+    }
+    else {
+        // Text somewhere inside targetbox
+        document.getElementById('targetarrowup').style.display = "none";
         document.getElementById('targetarrowdown').style.display = "none";
     }
 }

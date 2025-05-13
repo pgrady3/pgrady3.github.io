@@ -12,13 +12,12 @@
     <title>Scroll</title>
     <link rel="stylesheet" href="style_dc.css">
     <script type="text/javascript" src="scripts_dc.js"></script>
-    <div id="scroll-count" style="position: fixed; top: 10px; left: 10px; background-color: white; padding: 5px;">Scroll Count: 0</div>
 </head>
 
 
 <body oncontextmenu="return false;">
     <div id="scroll-body" style="display: none;">
-        <div id="text-top-left" class="text-top-left"></div>
+        <div id="text-top-left" class="text-top-left" style="display: none;"></div>
         <div class="scroll-container" id="scroll-container">
             <div class="scrollable" id="scroller">
                 <p class="scroll-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
@@ -140,9 +139,9 @@
 			<p id="start-text" style="font-size: 1.5rem"></p>
 		</div>
     </div>
-<!--
+
 	<form
-        action="https://docs.google.com/forms/d/e/1FAIpQLSfWSUgjtIycppwi39wFNjKkwrmylvf7IjTJ11AKJSPeG5yyyQ/formResponse"
+		action="https://docs.google.com/forms/d/e/1FAIpQLSfWSUgjtIycppwi39wFNjKkwrmylvf7IjTJ11AKJSPeG5yyyQ/formResponse"
 		target="_self" id="bootstrapForm" method="POST" style="display:none;">
 
 		<input id="device_os" type="text" name="entry.1366025332">
@@ -150,37 +149,18 @@
 		<input id="participant_id" type="text" name="entry.1761654424">
 		<input id="trial_num" type="text" name="entry.1116494097">
 		<input id="time_to_complete" type="text" name="entry.1300493740">
-        <input id="scroll_total" type="text" name="entry.1300493740">
-
 		<input type="hidden" name="fvv" value="1">
 		<input type="hidden" name="fbzx" value="3370711476967520141">
 		<input type="hidden" name="pageHistory" value="0">
 
 		<input class="btn btn-primary" type="submit" value="Submit">
 	</form>
--->
-    <form
-        action="https://docs.google.com/forms/d/e/1FAIpQLScvAufw0WDETmgRIL2d_TqBY802sQvV0e5oV075Zg9WVIZ_Ww/formResponse"
-        target="_self" id="bootstrapForm" method="POST" style="display:none;">
- 
-        <input id="scroll_total" type="text" name="entry.1230626636">
-
-        <input type="hidden" name="fvv" value="1">
-        <input type="hidden" name="fbzx" value="6788215247902677532">
-        <input type="hidden" name="pageHistory" value="0">
-
-        <input class="btn btn-primary" type="submit" value="Submit">
-    </form>
-
-
 
     <script type="text/javascript">
         const EXPERIENCE_NAME = "Scroll";
         const EXPLANATION = 'Scroll until the highlighted text is in the purple box.';
         setExperienceTitle(EXPERIENCE_NAME, EXPLANATION);
     </script>
-    <!-- Link to the external JavaScript file -->
-    <script src="scroll-tracker.js"></script>
 </body>
 
 </html>

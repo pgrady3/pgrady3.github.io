@@ -35,6 +35,7 @@ var trialNum = 1;
 let isMoving = false; // Tracks if the mouse is currently moving
 let dragCount = 0;    // Counter for start-stop movements
 let stopTimeout;      // Timer to detect when the mouse stops
+let lastMousePosition = { x: null, y: null };
 
 const experienceScreen = document.getElementById('experience-screen');
 const startScreen = document.getElementById('start-screen');
@@ -56,7 +57,14 @@ function resetTrialData() {
 }
 
 // Event listener for mouse movement
-document.addEventListener('pointermove', () => {
+document.addEventListener('mousemove', () => {
+	const currentMousePosition = { x: event.clientX, y: event.clientY };
+	if (lastMousePosition.x === currentMousePosition.x && lastMousePosition.y === currentMousePosition.y) {
+        return;
+    }
+
+	lastMousePosition = currentMousePosition;
+
     if (!isMoving) {
         // Mouse just started moving
         isMoving = true;
@@ -70,7 +78,7 @@ document.addEventListener('pointermove', () => {
     // Set a timeout to detect when the mouse stops
     stopTimeout = setTimeout(() => {
         isMoving = false; // Mouse has stopped
-    }, 72); // Adjust timeout duration as needed
+    }, 100); // Adjust timeout duration as needed
 });
 
 function v(v) {
@@ -222,10 +230,10 @@ var fittsTest = {
 			if (x == this.last.x && y == this.last.y) {
 				return;
 			}
-	
+
 			// Check if the mouse is inside the target area
 			const isInsideTarget = distance({ x: x, y: y }, this.target) < (this.target.w / 2);
-	
+
 			if (isInsideTarget && !this.isInsideTarget) {
 				this.targetEntries++; // Increment target entry count
 				this.isInsideTarget = true; // Mark as inside target
@@ -233,7 +241,7 @@ var fittsTest = {
 			} else if (!isInsideTarget) {
 				this.isInsideTarget = false; // Reset flag when the user exits the target
 			}
-	
+
 			this.last = { x: x, y: y, t: (new Date).getTime() };
 		}
 	},
@@ -421,7 +429,7 @@ function startTimer() {
 }
 
 function startExperience() {
-	resetTrialData(); 
+	resetTrialData();
 	let condition = conditionSelect.value;
 	console.log('start experience, condition: ' + condition);
 
@@ -522,7 +530,7 @@ function endExperience() {
 	let numTargets = fittsTest.currentCount - 1;
 	let ct = fittsTest.clicksTotal;
 	let cot = fittsTest.clicksOnTarget;
-	let te = fittsTest.targetEntries; 
+	let te = fittsTest.targetEntries;
 
 	startText.innerText = `#${trialNum} C:${conditionSelect.value} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr} CT:${ct} TE:${te}\n` + startText.innerText;
 
@@ -537,8 +545,8 @@ function endExperience() {
 	fittsTest.active = false;
 	fittsTest.clicksTotal = 0;
 	fittsTest.clicksOnTarget = 0;
-	fittsTest.targetEntries = 1; 
-	fittsTest.isInsideTarget = false; 
+	fittsTest.targetEntries = 1;
+	fittsTest.isInsideTarget = false;
 	timer.innerText = "";
 	testAreaSVG.selectAll('line').remove(); // remove all cursor trails
 	//fittsTest.advanceParams();
@@ -566,28 +574,28 @@ function submitForm(trial, condition, id, ide, tp, ttc, ct, cot, te) {
     }
 
     // Populate the form fields
-    // document.getElementById('device_os').value = navigator.platform;
-    // document.getElementById('device_browser').value = navigator.userAgent;
-    // document.getElementById('participant_id').value = document.getElementById('button-pad-id').value;
-    // document.getElementById('trial_num').value = trial;
-    // document.getElementById('condition_num').value = condition;
-    // document.getElementById('index_of_difficulty').value = id;
-    // document.getElementById('effective_id').value = ide;
-    // document.getElementById('throughput').value = tp;
-    // document.getElementById('time_to_complete').value = ttc;
+    document.getElementById('device_os').value = navigator.platform;
+    document.getElementById('device_browser').value = navigator.userAgent;
+    document.getElementById('participant_id').value = document.getElementById('button-pad-id').value;
+    document.getElementById('trial_num').value = trial;
+    document.getElementById('condition_num').value = condition;
+    document.getElementById('index_of_difficulty').value = id;
+    document.getElementById('effective_id').value = ide;
+    document.getElementById('throughput').value = tp;
+    document.getElementById('time_to_complete').value = ttc;
 
-    // // Add clicksTotal and clicksOnTarget to the form
-    // document.getElementById('clicks_total').value = ct; // Total clicks
-    // document.getElementById('clicks_on_target').value = cot; // Clicks on target
+    // Add clicksTotal and clicksOnTarget to the form
+    document.getElementById('clicks_total').value = ct; // Total clicks
+    document.getElementById('clicks_on_target').value = cot; // Clicks on target
 
-	// // Add target entires to the form
-	// document.getElementById('target_entries').value = te; 
+	// Add target entires to the form
+	document.getElementById('target_entries').value = te;
 
 	// Add drag count
-	document.getElementById('drag_count').value = dragCount; 
+	document.getElementById('drag_count').value = dragCount;
 
     // Dispatch a synthetic submit event
-    form.dispatchEvent(new Event('submit', { cancelable: true }));
+    // form.dispatchEvent(new Event('submit', { cancelable: true }));
 }
 
 function initButtonPad() {

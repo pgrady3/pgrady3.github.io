@@ -41,6 +41,14 @@ let dragCount = 0;    // Counter for start-stop movements
 let stopTimeout;      // Timer to detect when the mouse stops
 let lastMousePosition = { x: null, y: null };
 
+// Variables for cursor latency
+let cursorLatency = 200; // Default latency in milliseconds
+let cursorPositionQueue = []; // Queue to store cursor positions with timestamps
+let lastRenderTime = 0; // Last time the cursor was rendered
+let renderedCursorPosition = { x: 0, y: 0 }; // Current position of the rendered cursor
+let pendingClickEvent = null; // Store click event to be processed after delay
+let clickTimeout = null; // Timeout for delayed click processing
+
 const experienceScreen = document.getElementById('experience-screen');
 const startScreen = document.getElementById('start-screen');
 const startButton = document.getElementById('start-button');
@@ -60,8 +68,65 @@ function resetTrialData() {
     console.log("Trial data reset. Drag count is now 0.");
 }
 
+// Create the rendered cursor
+function createRenderedCursor() {
+    // Remove any existing rendered cursor
+    testAreaSVG.selectAll('#rendered-cursor').remove();
+
+    // Create a new cursor
+    testAreaSVG.append('circle')
+        .attr('id', 'rendered-cursor')
+        .attr('r', 5)
+        .attr('fill', 'blue')
+        .attr('opacity', 0.7)
+        .attr('cx', 0)
+        .attr('cy', 0)
+        .style('pointer-events', 'none'); // Make sure it doesn't interfere with mouse events
+}
+
+// Update the rendered cursor position based on the queue
+function updateRenderedCursor(currentTime) {
+    // if (!currentTime) {
+	// 	console.log("current time update render: " + currentTime)
+    // }
+
+	currentTime = Date.now();
+
+    // Calculate the time for which we want to show the cursor position
+    const targetTime = currentTime - cursorLatency;
+
+    // Find the position in the queue that is closest to the target time
+    let targetPosition = null;
+
+    // Remove positions from the queue that are older than the target time
+    while (cursorPositionQueue.length > 0 && cursorPositionQueue[0].time <= targetTime) {
+        targetPosition = cursorPositionQueue.shift();
+    }
+
+    // If we found a position, update the rendered cursor
+    if (targetPosition) {
+        renderedCursorPosition = { x: targetPosition.x, y: targetPosition.y };
+
+        testAreaSVG.select('#rendered-cursor')
+            .attr('cx', renderedCursorPosition.x)
+            .attr('cy', renderedCursorPosition.y);
+    }
+
+    // Request the next animation frame
+    requestAnimationFrame(updateRenderedCursor);
+}
+
+// Process the click event after the delay
+function processDelayedClick() {
+    if (pendingClickEvent) {
+        const { x, y } = pendingClickEvent;
+        fittsTest.mouseClicked(x, y);
+        pendingClickEvent = null;
+    }
+}
+
 // Event listener for mouse movement
-document.addEventListener('mousemove', () => {
+document.addEventListener('mousemove', (event) => {
 	const currentMousePosition = { x: event.clientX, y: event.clientY };
 	if (lastMousePosition.x === currentMousePosition.x && lastMousePosition.y === currentMousePosition.y) {
         return;
@@ -132,6 +197,7 @@ var fittsTest = {
 			.append('circle')
 				.attr('id', 'target')
 				.style('fill', 'red')
+				.style('opacity', 0.5) // Set the opacity to 50%
 				.call(insert);
 
 		target.transition()
@@ -184,8 +250,6 @@ var fittsTest = {
 			.exit()
 				.remove();
 	},
-
-
 
 	mouseClicked: function(x, y) {
 		var isHit = distance({ x: x, y: y }, this.target) < (this.target.w / 2);
@@ -300,16 +364,35 @@ function randomAB(a, b) {
 	return a + Math.random() * (b - a);
 }
 
-function mouseMoved()
-{
+function mouseMoved() {
 	var m = d3.svg.mouse(this);
-	fittsTest.mouseMoved(m[0], m[1])
+
+	// Add the current position to the queue with timestamp
+	const currentTime = Date.now();
+
+	cursorPositionQueue.push({
+		x: m[0],
+		y: m[1],
+		time: currentTime
+	});
+
+	// Call the original mouseMoved function with the real cursor position
+	fittsTest.mouseMoved(m[0], m[1]);
 }
 
-function mouseClicked()
-{
+function mouseClicked() {
 	var m = d3.svg.mouse(this);
-	fittsTest.mouseClicked(m[0], m[1]);
+
+	// Store the click event to be processed after the delay
+	pendingClickEvent = { x: m[0], y: m[1] };
+
+	// Clear any existing timeout
+	if (clickTimeout) {
+		clearTimeout(clickTimeout);
+	}
+
+	// Set a timeout to process the click after the latency
+	clickTimeout = setTimeout(processDelayedClick, cursorLatency);
 }
 
 function distance(a, b) {
@@ -402,7 +485,11 @@ function bgRect(d, dim) {
 		.attr('class', 'back');
 }
 
-
+// Function to update the cursor latency
+function updateCursorLatency(value) {
+	cursorLatency = parseInt(value);
+	document.getElementById('latency-value').textContent = value + 'ms';
+}
 
 var testAreaSVG = d3.select('#test-area').append('svg')
 	.attr('width', testDimension.width)
@@ -459,6 +546,10 @@ function startExperience() {
 
 	startScreen.style.display = "none";
 	experienceScreen.style.display = "";
+
+	// Create the rendered cursor and start updating it
+	createRenderedCursor();
+	requestAnimationFrame(updateRenderedCursor);
 }
 
 function endExperience() {
@@ -553,6 +644,7 @@ function endExperience() {
 	fittsTest.isInsideTarget = false;
 	timer.innerText = "";
 	testAreaSVG.selectAll('line').remove(); // remove all cursor trails
+	testAreaSVG.select('#rendered-cursor').remove(); // remove the rendered cursor
 	//fittsTest.advanceParams();
 }
 
@@ -616,5 +708,14 @@ function initButtonPad() {
     });
 }
 
-window.addEventListener('load', initButtonPad);
+window.addEventListener('load', function() {
+    initButtonPad();
+
+    // Initialize the latency slider value
+    if (document.getElementById('latency-slider')) {
+        document.getElementById('latency-slider').value = cursorLatency;
+        document.getElementById('latency-value').textContent = cursorLatency + 'ms';
+    }
+});
+
 startButton.addEventListener('click', startExperience);

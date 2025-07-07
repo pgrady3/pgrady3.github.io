@@ -42,7 +42,7 @@ let stopTimeout;      // Timer to detect when the mouse stops
 let lastMousePosition = { x: null, y: null };
 
 // Variables for cursor latency
-let cursorLatency = 200; // Default latency in milliseconds
+let cursorLatency = 100; // Default latency in milliseconds
 let cursorPositionQueue = []; // Queue to store cursor positions with timestamps
 let lastRenderTime = 0; // Last time the cursor was rendered
 let renderedCursorPosition = { x: 0, y: 0 }; // Current position of the rendered cursor
@@ -691,7 +691,7 @@ function submitForm(trial, condition, id, ide, tp, ttc, ct, cot, te) {
 	document.getElementById('drag_count').value = dragCount;
 
     // Dispatch a synthetic submit event
-    form.dispatchEvent(new Event('submit', { cancelable: true }));
+    // form.dispatchEvent(new Event('submit', { cancelable: true }));
 }
 
 function initButtonPad() {

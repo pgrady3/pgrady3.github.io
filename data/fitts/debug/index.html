@@ -9,58 +9,36 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Selection</title>
-    <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" src="scripts.js"></script>
+    <title>Multi-Action Experience</title>
+    <link rel="stylesheet" href="multiexperience.css">
+    <script type="text/javascript" src="multiexperience.js"></script>
 </head>
 
 <body oncontextmenu="return false;">
-    <div class="textselection-body" id="textselection-body" style="display: none;">
-        <div id="text-top-left" class="text-top-left"></div>
-        <div class="textselection-container text center" id="textselection-container">
-            <div class="scrollable" id="scroller">
-                <p class="selection-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                    incididunt ut labore
-                    et dolore magna aliqua. Scelerisque in dictum non consectetur a erat nam at. Risus commodo viverra
-                    maecenas accumsan lacus vel facilisis volutpat. Enim blandit volutpat maecenas volutpat blandit
-                    aliquam etiam. Lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor. </p>
-                <p class="selection-text">Massa tincidunt dui
-                    ut ornare lectus sit amet est. Nulla aliquet enim tortor at auctor urna. Bibendum arcu vitae
-                    elementum curabitur vitae nunc sed velit. Velit dignissim sodales ut eu sem integer vitae. Integer
-                    enim neque volutpat ac tincidunt vitae. Tincidunt vitae semper quis lectus nulla at volutpat diam.
-                    Augue interdum velit euismod in pellentesque massa placerat duis. Vitae tempus quam pellentesque nec
-                    nam. Enim nec dui nunc mattis enim ut tellus elementum sagittis.</p>
-                <p class="selection-text">Purus gravida quis blandit turpis cursus in. Consectetur lorem donec massa
-                    sapien faucibus. Iaculis
-                    urna id volutpat lacus. Penatibus et magnis dis parturient montes. Diam donec adipiscing tristique
-                    risus nec feugiat. Eu volutpat odio facilisis mauris sit. Platea dictumst vestibulum rhoncus est
-                    pellentesque elit ullamcorper dignissim. Elementum nisi quis eleifend quam. Porta non pulvinar neque
-                    laoreet suspendisse interdum. Vulputate odio ut enim blandit volutpat maecenas volutpat blandit
-                    aliquam. Venenatis a condimentum vitae sapien.</p>
-                <p class="selection-text">Nullam vehicula ipsum a arcu cursus. Vel eros donec ac odio tempor orci
-                    dapibus ultrices. Faucibus in
-                    ornare quam viverra orci sagittis. Euismod quis viverra nibh cras pulvinar. Hac habitasse platea
-                    dictumst quisque sagittis purus sit. Consequat semper viverra nam libero justo laoreet. Velit
-                    aliquet sagittis id consectetur. Ut sem viverra aliquet eget.</p>
-            </div>
+    <div id="experience-screen" class="experience-screen" style="display: none;">
+        <div id="container-outline" class="container-outline"></div>
+        <div id="text-top-left" class="text-top-left">Multi-Action Experience</div>
+        <div id="target-button-container" class="target-button-container">
+            <div id="target-button-label" class="target-button-label"></div>
+            <button id="target-button" class="target-button"></button>
         </div>
-
+        <div id="drag-target" class="drag-target" style="display: none;"></div>
+        <div id="scroll-minigame" class="scroll-minigame" style="display: none;">
+            <div class="scroll-track">
+                <div id="scroll-block" class="scroll-block"></div>
+                <div id="scroll-target" class="scroll-target"></div>
+            </div>
+            <div class="scroll-instructions">Scroll to move the block into the target zone</div>
+        </div>
     </div>
 
     <div class="start-screen" id="start-screen">
         <div class="start-controls">
-            <p id="start-title"></p>
-            <p id="start-explanation"></p>
-            <button id="start-button" onclick="startTextSelectionExperience()">Start</button>
+            <p id="start-title">Multi-Action Experience</p>
+            <p id="start-explanation">Follow the instructions shown on each button - left click, right click, or click and hold.</p>
+            <button id="start-button" onclick="startExperience()">Start</button>
         </div>
     </div>
-    <script type="text/javascript">
-        const EXPERIENCE_NAME = "Text Selection";
-        const EXPLANATION = 'Use the cursor to select the highlighted text.';
-        setExperienceTitle(EXPERIENCE_NAME, EXPLANATION);
-    </script>
-
-
 </body>
 
 </html>

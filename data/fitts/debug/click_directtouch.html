@@ -1,0 +1,43 @@
+<!--
+    (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Touch</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="scripts.js"></script>
+</head>
+
+<body oncontextmenu="return false;">
+    <div id="experience-screen" class="experience-screen" style="display: none">
+        <div id="container-outline" class="container-outline"></div>
+        <div id="text-top-left" class="text-top-left"></div>
+        <button id="target-button" class="target-button"></button>
+    </div>
+
+    <div class="start-screen" id="start-screen">
+        <div class="start-controls">
+            <p id="start-title"></p>
+            <p id="start-explanation"></p>
+            <button id="start-button" onclick="startExperience()">Start</button>
+        </div>
+    </div>
+    <script type="text/javascript">
+        const EXPERIENCE_NAME = "Direct Touch";
+        const CLICK_METHOD = 'directtouch';
+        const EXPLANATION = 'Based on where the box appears on the screen, poke that region of the trackpad. Do not actually move the cursor.';
+        BUTTON_SIZES = [0.10];
+        SCREEN_AREA_USED = 1.0;
+        BUTTON_RESPAWN_MAX_RAD = 100000;    // A hacky way to force cartesian sampling
+
+        setExperienceTitle(EXPERIENCE_NAME, EXPLANATION);
+    </script>
+</body>
+
+</html>

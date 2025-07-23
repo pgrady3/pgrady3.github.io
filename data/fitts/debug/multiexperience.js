@@ -3,7 +3,7 @@
  */
 
 // Configuration variables
-let BUTTON_SIZES = [0.01, 0.02, 0.03]; // Button size as a fraction of the viewport width
+let BUTTON_SIZES = [0.02, 0.03]; // Button size as a fraction of the viewport width
 let SCREEN_AREA_USED = 0.9; // Area of the screen which is used by the experience
 let BUTTON_RESPAWN_MAX_RAD = 0.5; // Max distance to the new button, in viewport width
 

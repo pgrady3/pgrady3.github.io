@@ -258,7 +258,7 @@ function highlightRandomPhraseScroll() {
     const randomParagraph = paragraphs[Math.floor(Math.random() * paragraphs.length)];
     const paragraphText = randomParagraph.textContent.replace(/\s+/g, ' ').trim();
     const phrases = paragraphText.split(' ');
-    const wordCount = Math.floor(Math.random() * 2) + 3; // Select between 3 and 5 words
+    const wordCount = Math.floor(Math.random() * 2) + 2; // Select between 2 and 4 words
     const startIndex = Math.floor(Math.random() * (phrases.length - wordCount));
     const endIndex = startIndex + wordCount;
 
@@ -359,7 +359,6 @@ function startScrollExperience() {
 function highlightRandomPhraseSelection() {
     if (successfulTextSelections >= expectedTextSelections) {
         endPRAXExperience();
-        return;
     }
 
     let paragraphs = document.querySelectorAll('.selection-text');
@@ -369,7 +368,7 @@ function highlightRandomPhraseSelection() {
     const paragraphText = randomParagraph.textContent.replace(/\s+/g, ' ').trim();
     const phrases = paragraphText.split(' ');
     const randomDistribution = Math.random() * Math.random();   // Make the distribution skewed towards zero
-    const wordCount = Math.floor(randomDistribution * 10) + 3;
+    const wordCount = Math.floor(randomDistribution * 5) + 3;
     const startIndex = Math.floor(Math.random() * (phrases.length - wordCount));
     const endIndex = startIndex + wordCount;
 
@@ -415,15 +414,26 @@ function removeHighlight() {
 }
 
 function removeExcessParagraphs() {
-    // This function deletes paragraphs until there's no more scrollbar. This is run once on pageload, and it makes sure we don't have a scrollbar.
+    // This function removes words from the last paragraphs one by one until there's no more scrollbar. This is run once on pageload, and it makes sure we don't have a scrollbar.
     const paragraphs = document.querySelectorAll('p');
     const scrollable = document.getElementById('scroller');
-    for (let i = paragraphs.length - 1; i >= 0; i--) {
-        const hasVerticalScrollbar = scrollable.scrollHeight > scrollable.clientHeight;
-        const paragraph = paragraphs[i];
-        if (scrollable.scrollHeight > scrollable.clientHeight) {
-            paragraph.parentNode.removeChild(paragraph);    // Remove the paragraph from the DOM
-            console.log('Removed paragraph ' + i);
+
+    let currentParagraphIndex = paragraphs.length - 1;
+
+    while (scrollable.scrollHeight > scrollable.clientHeight && currentParagraphIndex >= 0) {
+        const paragraph = paragraphs[currentParagraphIndex];
+        const words = paragraph.textContent.trim().split(/\s+/);
+
+        if (words.length > 1) {
+            // Remove the last word from the current paragraph
+            words.pop();
+            paragraph.textContent = words.join(' ');
+            console.log(`Removed word from paragraph ${currentParagraphIndex}, remaining words: ${words.length}`);
+        } else {
+            // If only one word or empty, remove the entire paragraph and move to the previous one
+            paragraph.parentNode.removeChild(paragraph);
+            console.log(`Removed paragraph ${currentParagraphIndex}`);
+            currentParagraphIndex--;
         }
     }
 }

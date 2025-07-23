@@ -223,7 +223,7 @@ function startNoContactExperience() {
     document.getElementById('start-screen').style.display = "none";
     document.getElementById('experience-screen').style.display = "";
 
-	timeRemaining = 60_000;
+	timeRemaining = 60000;
 	let previousTimestamp = null;
 	function loop(timestamp) {
 		if (!previousTimestamp)

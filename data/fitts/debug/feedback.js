@@ -10,11 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // Validate form
-        if (!validateForm()) {
-            return;
-        }
-
         // Show submitting state
         form.classList.add('form-submitting');
         submitButton.disabled = true;
@@ -32,45 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     });
 });
-
-function validateForm() {
-    const requiredQuestions = [
-        'ease_of_interaction',
-        'satisfaction',
-        'frustration_level',
-        'feeling_of_control',
-        'fatigue',
-        'accuracy',
-        'lag',
-        'likelihood_of_use'
-    ];
-
-    let isValid = true;
-    let firstInvalidQuestion = null;
-
-    requiredQuestions.forEach(questionName => {
-        const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
-        if (!selectedOption) {
-            isValid = false;
-            if (!firstInvalidQuestion) {
-                firstInvalidQuestion = document.querySelector(`input[name="${questionName}"]`);
-            }
-        }
-    });
-
-    if (!isValid) {
-        alert('Please answer all required questions before submitting.');
-        if (firstInvalidQuestion) {
-            firstInvalidQuestion.closest('.question-group').scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-        }
-        return false;
-    }
-
-    return true;
-}
 
 function collectFormData() {
     const formData = {};
@@ -121,33 +77,3 @@ function sendToUnity(formData) {
         console.log('Feedback data that would be sent:', formData);
     }
 }
-
-// Optional: Add some visual feedback for radio button interactions
-document.addEventListener('DOMContentLoaded', function() {
-    const radioButtons = document.querySelectorAll('input[type="radio"]');
-
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', function() {
-            // Remove any existing selection styling from the question group
-            const questionGroup = this.closest('.question-group');
-            const allOptions = questionGroup.querySelectorAll('.likert-option');
-
-            allOptions.forEach(option => {
-                option.classList.remove('selected');
-            });
-
-            // Add selection styling to the chosen option
-            this.closest('.likert-option').classList.add('selected');
-        });
-    });
-});
-
-// Add some additional CSS for the selected state
-const style = document.createElement('style');
-style.textContent = `
-    .likert-option.selected {
-        background-color: #e3f2fd !important;
-        border-left: 4px solid #4a90e2;
-    }
-`;
-document.head.appendChild(style);

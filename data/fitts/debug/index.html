@@ -9,36 +9,286 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Action Experience</title>
-    <link rel="stylesheet" href="multiexperience.css">
-    <script type="text/javascript" src="multiexperience.js"></script>
+    <title>Surface Touchpad Feedback Survey</title>
+    <link rel="stylesheet" href="feedback.css">
 </head>
 
-<body oncontextmenu="return false;">
-    <div id="experience-screen" class="experience-screen" style="display: none;">
-        <div id="container-outline" class="container-outline"></div>
-        <div id="text-top-left" class="text-top-left">Multi-Action Experience</div>
-        <div id="target-button-container" class="target-button-container">
-            <div id="target-button-label" class="target-button-label"></div>
-            <button id="target-button" class="target-button"></button>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Surface Touchpad Feedback Survey</h1>
+            <p>Please rate your experience with the surface touchpad by selecting the appropriate response for each question.</p>
         </div>
-        <div id="drag-target" class="drag-target" style="display: none;"></div>
-        <div id="scroll-minigame" class="scroll-minigame" style="display: none;">
-            <div class="scroll-track">
-                <div id="scroll-block" class="scroll-block"></div>
-                <div id="scroll-target" class="scroll-target"></div>
+
+        <form id="feedback-form" class="feedback-form">
+            <div class="question-group">
+                <h3>1. Ease of Interaction</h3>
+                <p class="question-text">Overall how difficult or easy was it for you to use the surface touchpad?</p>
+                <div class="likert-scale">
+                    <label class="likert-option">
+                        <input type="radio" name="ease_of_interaction" value="1" required>
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Very Difficult</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="ease_of_interaction" value="2">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Difficult</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="ease_of_interaction" value="3">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Neutral</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="ease_of_interaction" value="4">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Easy</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="ease_of_interaction" value="5">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Very Easy</span>
+                    </label>
+                </div>
             </div>
-            <div class="scroll-instructions">Scroll to move the block into the target zone</div>
+
+            <div class="question-group">
+                <h3>2. Satisfaction</h3>
+                <p class="question-text">How satisfied are you with the overall experience of using the surface touchpad?</p>
+                <div class="likert-scale">
+                    <label class="likert-option">
+                        <input type="radio" name="satisfaction" value="1" required>
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Very Dissatisfied</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="satisfaction" value="2">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Dissatisfied</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="satisfaction" value="3">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Neutral</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="satisfaction" value="4">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Satisfied</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="satisfaction" value="5">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Very Satisfied</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <h3>3. Frustration Level</h3>
+                <p class="question-text">How frustrated did you feel when using the surface touchpad?</p>
+                <div class="likert-scale">
+                    <label class="likert-option">
+                        <input type="radio" name="frustration_level" value="1" required>
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Extremely Frustrated</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="frustration_level" value="2">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Very Frustrated</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="frustration_level" value="3">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Moderately Frustrated</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="frustration_level" value="4">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Slightly Frustrated</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="frustration_level" value="5">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Not Frustrated at All</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <h3>4. Feeling of Control</h3>
+                <p class="question-text">How in-control did you feel when using the surface touchpad?</p>
+                <div class="likert-scale">
+                    <label class="likert-option">
+                        <input type="radio" name="feeling_of_control" value="1" required>
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Not in Control at All</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="feeling_of_control" value="2">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Slightly in Control</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="feeling_of_control" value="3">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Moderately in Control</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="feeling_of_control" value="4">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Very in Control</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="feeling_of_control" value="5">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Completely in Control</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <h3>5. Fatigue</h3>
+                <p class="question-text">How much fatigue did you experience when using the surface touchpad?</p>
+                <div class="likert-scale">
+                    <label class="likert-option">
+                        <input type="radio" name="fatigue" value="1" required>
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Extreme Fatigue</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="fatigue" value="2">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">High Fatigue</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="fatigue" value="3">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Moderate Fatigue</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="fatigue" value="4">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Slight Fatigue</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="fatigue" value="5">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">No Fatigue</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <h3>6. Accuracy</h3>
+                <p class="question-text">How accurately were you able to select targets with the surface touchpad?</p>
+                <div class="likert-scale">
+                    <label class="likert-option">
+                        <input type="radio" name="accuracy" value="1" required>
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Very Inaccurate</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="accuracy" value="2">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Inaccurate</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="accuracy" value="3">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Neutral</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="accuracy" value="4">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Accurate</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="accuracy" value="5">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Very Accurate</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <h3>7. Lag</h3>
+                <p class="question-text">How much lag did you notice when using the surface touchpad?</p>
+                <div class="likert-scale">
+                    <label class="likert-option">
+                        <input type="radio" name="lag" value="1" required>
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Extreme Lag</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="lag" value="2">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">High Lag</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="lag" value="3">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Moderate Lag</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="lag" value="4">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Slight Lag</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="lag" value="5">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">No Lag</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <h3>8. Likelihood of Use</h3>
+                <p class="question-text">How likely would you be to use this feature if it was available right now on your mixed reality device?</p>
+                <div class="likert-scale">
+                    <label class="likert-option">
+                        <input type="radio" name="likelihood_of_use" value="1" required>
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Very Unlikely</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="likelihood_of_use" value="2">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Unlikely</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="likelihood_of_use" value="3">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Neutral</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="likelihood_of_use" value="4">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Likely</span>
+                    </label>
+                    <label class="likert-option">
+                        <input type="radio" name="likelihood_of_use" value="5">
+                        <span class="radio-custom"></span>
+                        <span class="label-text">Very Likely</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button type="submit" id="submit-btn" class="submit-button">Submit Feedback</button>
+            </div>
+        </form>
+
+        <div id="thank-you-message" class="thank-you-message" style="display: none;">
+            <h2>Thank you for your feedback!</h2>
+            <p>Your responses have been submitted successfully.</p>
         </div>
     </div>
 
-    <div class="start-screen" id="start-screen">
-        <div class="start-controls">
-            <p id="start-title">Multi-Action Experience</p>
-            <p id="start-explanation">Follow the instructions shown on each button - left click, right click, or click and hold.</p>
-            <button id="start-button" onclick="startExperience()">Start</button>
-        </div>
-    </div>
+    <script src="feedback.js"></script>
 </body>
 
 </html>

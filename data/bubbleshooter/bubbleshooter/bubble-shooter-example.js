@@ -1,28 +1,39 @@
-// ------------------------------------------------------------------------
-// Bubble Shooter Game Tutorial With HTML5 And JavaScript
-// Copyright (c) 2015 Rembound.com
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
-//
-// http://rembound.com/articles/bubble-shooter-game-tutorial-with-html5-and-javascript
-// ------------------------------------------------------------------------
+/**
+ * (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+ */
 
 // The function gets called when the window is fully loaded
 window.onload = function() {
     // Get the canvas and context
     var canvas = document.getElementById("viewport");
     var context = canvas.getContext("2d");
+
+    // Base game dimensions (original size)
+    var baseWidth = 628;
+    var baseHeight = 628;
+    var scaleFactor = 1;
+
+    // Setup responsive canvas
+    function setupCanvas() {
+        var container = canvas.parentElement;
+        var containerWidth = window.innerWidth * 0.9;  // 90% of viewport width
+        var containerHeight = window.innerHeight * 0.9; // 90% of viewport height
+
+        // Calculate scale factor maintaining aspect ratio
+        scaleFactor = Math.min(containerWidth / baseWidth, containerHeight / baseHeight);
+
+        canvas.width = baseWidth;
+        canvas.height = baseHeight;
+        canvas.style.width = (baseWidth * scaleFactor) + 'px';
+        canvas.style.height = (baseHeight * scaleFactor) + 'px';
+
+        // Ensure crisp pixel rendering
+        context.imageSmoothingEnabled = false;
+    }
+
+    // Setup canvas initially and on resize
+    setupCanvas();
+    window.addEventListener('resize', setupCanvas);
 
     // Timing and frames per second
     var lastframe = 0;
@@ -98,6 +109,10 @@ window.onload = function() {
     var turncounter = 0;
     var rowoffset = 0;
 
+    var gameTimer = 0;
+    const GAME_TIME_LIMIT = 120;
+    var experienceEnded = false;
+
     // Animation variables
     var animationstate = 0;
     var animationtime = 0;
@@ -152,7 +167,7 @@ window.onload = function() {
     // Initialize the game
     function init() {
         // Load images
-        images = loadImages(["bubble-sprites.png"]);
+        images = loadImages(["bubbleshooter/bubble-sprites.png"]);
         bubbleimage = images[0];
 
         // Add mouse events
@@ -179,6 +194,10 @@ window.onload = function() {
 
         player.nextbubble.x = player.x - 2 * level.tilewidth;
         player.nextbubble.y = player.y;
+
+        // Initialize PRAX experience timer
+        gameTimer = 0;
+        experienceEnded = false;
 
         // New game
         newGame();
@@ -233,6 +252,15 @@ window.onload = function() {
 
         // Update the fps counter
         updateFps(dt);
+
+        // Update PRAX experience timer and check for end
+        if (!experienceEnded) {
+            gameTimer += dt;
+            if (gameTimer >= GAME_TIME_LIMIT) {
+                experienceEnded = true;
+                PRAXEndExperience();
+            }
+        }
 
         if (gamestate == gamestates.ready) {
             // Game is ready for player input
@@ -1063,3 +1091,12 @@ window.onload = function() {
     // Call init to start the game
     init();
 };
+
+
+function PRAXEndExperience() {
+    console.log('Ending PRAX experience');
+    if (window.vuplex) {
+        // send message to Unity
+        window.vuplex.postMessage({ type: "test_result", message: "" })
+    }
+}

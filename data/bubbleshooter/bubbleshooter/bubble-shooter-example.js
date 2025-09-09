@@ -16,16 +16,23 @@ window.onload = function() {
     // Setup responsive canvas
     function setupCanvas() {
         var container = canvas.parentElement;
-        var containerWidth = window.innerWidth * 0.9;  // 90% of viewport width
-        var containerHeight = window.innerHeight * 0.9; // 90% of viewport height
+        var containerWidth = window.innerWidth;
+        var containerHeight = window.innerHeight;
 
-        // Calculate scale factor maintaining aspect ratio
-        scaleFactor = Math.min(containerWidth / baseWidth, containerHeight / baseHeight);
+        // Calculate scale factor based on height only to fill the height of the window
+        scaleFactor = containerHeight / baseHeight;
 
         canvas.width = baseWidth;
         canvas.height = baseHeight;
         canvas.style.width = (baseWidth * scaleFactor) + 'px';
         canvas.style.height = (baseHeight * scaleFactor) + 'px';
+
+        // Center horizontally
+        canvas.style.display = 'block';
+        canvas.style.marginLeft = 'auto';
+        canvas.style.marginRight = 'auto';
+        // Remove any vertical margin
+        canvas.style.marginTop = '0';
 
         // Ensure crisp pixel rendering
         context.imageSmoothingEnabled = false;
@@ -184,11 +191,14 @@ window.onload = function() {
         }
 
         level.width = level.columns * level.tilewidth + level.tilewidth/2;
-        level.height = (level.rows-1) * level.rowheight + level.tileheight;
+        //level.height = (level.rows-1) * level.rowheight + level.tileheight;
+
+        //var levelHeightDiff = canvas.height - level.height;
+        level.height = canvas.height - level.rowheight - level.tileheight;
 
         // Init the player
         player.x = level.x + level.width/2 - level.tilewidth/2;
-        player.y = level.y + level.height;
+        player.y = level.y + level.height + 10;
         player.angle = 90;
         player.tiletype = 0;
 
@@ -737,17 +747,19 @@ window.onload = function() {
         //drawFrame();
 
         var yoffset =  level.tileheight/2;
+        // var bkgHeight = level.height + 4 - yoffset;
+        var bkgHeight = canvas.height;
 
         // Draw level background
         context.fillStyle = "#8c8c8c";
-        context.fillRect(level.x - 4, level.y - 4, level.width + 8, level.height + 4 - yoffset);
+        context.fillRect(level.x - 4, level.y, level.width + 8, bkgHeight);
 
         // Render tiles
         renderTiles();
 
         // Draw level bottom
         context.fillStyle = "#656565";
-        context.fillRect(level.x - 4, level.y - 4 + level.height + 4 - yoffset, level.width + 8, 2*level.tileheight + 3);
+        context.fillRect(level.x - 4, level.y + level.height + 12 - yoffset, level.width + 8, 2*level.tileheight + 3);
 
         // Draw score
         context.fillStyle = "#ffffff";

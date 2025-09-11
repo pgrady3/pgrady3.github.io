@@ -423,6 +423,8 @@ function selectionChangedHandler() {
             removeHighlight();
 
             document.removeEventListener('mouseup', selectionChangedHandler);
+            document.removeEventListener('touchend', selectionChangedHandler);
+            document.removeEventListener('selectionchange', selectionChangeHandler);
 
             let startText = document.getElementById('start-text');
             let elapsedStr = (elapsed / 1000).toFixed(2)
@@ -432,6 +434,13 @@ function selectionChangedHandler() {
             trialNum += 1;
         }
     }
+}
+
+function selectionChangeHandler() {
+    // Alternative handler for the selectionchange event (mobile-friendly)
+    setTimeout(() => {
+        selectionChangedHandler();
+    }, 100); // Small delay to ensure selection is complete
 }
 
 
@@ -469,7 +478,14 @@ function startTextSelectionExperience() {
     removeExcessParagraphs();
     highlightRandomPhraseSelection();
 
+    // Listen for mouse events (desktop/laptop)
     document.addEventListener('mouseup', selectionChangedHandler);
+
+    // Listen for touch events (mobile devices)
+    document.addEventListener('touchend', selectionChangedHandler);
+
+    // Listen for selection change events (works well with mobile drag handles)
+    document.addEventListener('selectionchange', selectionChangeHandler);
 
     startTimer();
 }

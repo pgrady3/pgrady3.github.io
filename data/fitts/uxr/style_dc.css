@@ -133,6 +133,13 @@ button {
     height: 520px;
     font-size: 2rem;
     line-height: 1.5;
+    /* Improve touch selection on mobile */
+    -webkit-touch-callout: default;
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 .scroll-container p {

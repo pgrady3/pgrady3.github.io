@@ -436,11 +436,16 @@ function selectionChangedHandler() {
     }
 }
 
+let selectionChangeTimer = null;
+
 function selectionChangeHandler() {
-    // Alternative handler for the selectionchange event (mobile-friendly)
-    setTimeout(() => {
+    // Clear any existing timer to reset the delay
+    clearTimeout(selectionChangeTimer);
+
+    // Set a new timer - only triggers after user stops changing selection for 500ms
+    selectionChangeTimer = setTimeout(() => {
         selectionChangedHandler();
-    }, 100); // Small delay to ensure selection is complete
+    }, 700); // Wait 700ms of no selection changes before triggering
 }
 
 
@@ -484,7 +489,7 @@ function startTextSelectionExperience() {
     // Listen for touch events (mobile devices)
     document.addEventListener('touchend', selectionChangedHandler);
 
-    // Listen for selection change events (works well with mobile drag handles)
+    // Listen for selection change events (mobile drag handles)
     document.addEventListener('selectionchange', selectionChangeHandler);
 
     startTimer();

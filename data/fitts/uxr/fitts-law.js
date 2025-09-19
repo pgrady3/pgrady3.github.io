@@ -56,6 +56,7 @@ function rHit(r, rTarget) {
 function resetTrialData() {
     isMoving = false;
     dragCount = 0;
+    fittsTest.totalCursorDistance = 0; // Reset cursor distance tracking
     clearTimeout(stopTimeout);
     console.log("Trial data reset. Drag count is now 0.");
 }
@@ -109,6 +110,8 @@ var fittsTest = {
 
 	targetEntries: 1, // test doesnt start until the first click so we add one here
 	isInsideTarget: false,
+
+	totalCursorDistance: 0, // Track total cursor movement distance
 
 	clickHistory: [],
 	lastIDe: 0,
@@ -233,6 +236,12 @@ var fittsTest = {
 			// Skip if the mouse did not move
 			if (x == this.last.x && y == this.last.y) {
 				return;
+			}
+
+			// Calculate and accumulate cursor distance
+			if (this.last.x !== undefined && this.last.y !== undefined) {
+				const movementDistance = distance({ x: x, y: y }, { x: this.last.x, y: this.last.y });
+				this.totalCursorDistance += movementDistance;
 			}
 
 			// Check if the mouse is inside the target area
@@ -535,10 +544,11 @@ function endExperience() {
 	let ct = fittsTest.clicksTotal;
 	let cot = fittsTest.clicksOnTarget;
 	let te = fittsTest.targetEntries;
+	let tcd = fittsTest.totalCursorDistance.toFixed(1);
 
-	startText.innerText = `#${trialNum} C:${conditionSelect.value} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr} CT:${ct} TE:${te}\n` + startText.innerText;
+	startText.innerText = `#${trialNum} C:${conditionSelect.value} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr} CT:${ct} TE:${te} TCD:${tcd}px\n` + startText.innerText;
 
-	submitForm(trialNum, conditionSelect.value, idStr, ideStr, tpStr, elapsedStr, ct, cot, te);
+	submitForm(trialNum, conditionSelect.value, idStr, ideStr, tpStr, elapsedStr, ct, cot, te, tcd);
 
 	trialNum += 1;
 
@@ -556,7 +566,7 @@ function endExperience() {
 	//fittsTest.advanceParams();
 }
 
-function submitForm(trial, condition, id, ide, tp, ttc, ct, cot, te) {
+function submitForm(trial, condition, id, ide, tp, ttc, ct, cot, te, tcd) {
     const form = document.getElementById('bootstrapForm');
     if (!form.dataset.submitHandlerAdded) {
         form.addEventListener('submit', (e) => {
@@ -597,6 +607,9 @@ function submitForm(trial, condition, id, ide, tp, ttc, ct, cot, te) {
 
 	// Add drag count
 	document.getElementById('drag_count').value = dragCount;
+
+	// Add total cursor distance
+	document.getElementById('total_cursor_distance').value = tcd;
 
     // Dispatch a synthetic submit event
     form.dispatchEvent(new Event('submit', { cancelable: true }));

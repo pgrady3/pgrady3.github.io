@@ -369,18 +369,31 @@ function highlightRandomPhraseSelection() {
     while (true) {
         let randomParagraph = paragraphs[Math.floor(rng.random() * paragraphs.length)];
         let paragraphText = randomParagraph.textContent.replace(/\s+/g, ' ').trim();
-        let phrases = paragraphText.split(' ');
-        let wordCount = Math.floor(rng.random() * 3) + 3;
-        let startIndex = Math.floor(rng.random() * (phrases.length - wordCount));
-        let endIndex = startIndex + wordCount;
+        let charCount = Math.floor(rng.random() * 11) + 10; // Select between 10 and 20 characters
+        let startIndex = Math.floor(rng.random() * (paragraphText.length - charCount));
+        let endIndex = startIndex + charCount;
+        let selectedText = paragraphText.slice(startIndex, endIndex);
+
+        // Trim leading and trailing spaces
+        let trimmedText = selectedText.trim();
+
+        // If trimmed text is too short, try again
+        if (trimmedText.length < 10) {
+            continue;
+        }
+
+        // Find the actual position of the trimmed text in the original paragraph
+        let actualStartIndex = paragraphText.indexOf(trimmedText, startIndex - (selectedText.length - trimmedText.length));
+        let actualEndIndex = actualStartIndex + trimmedText.length;
+
         let highlight = document.createElement('span');
         highlight.classList.add('highlight');
-        highlight.textContent = phrases.slice(startIndex, endIndex).join(' ');
-        let beforeText = phrases.slice(0, startIndex).join(' ');
-        let afterText = phrases.slice(endIndex).join(' ');
+        highlight.textContent = trimmedText;
+        let beforeText = paragraphText.slice(0, actualStartIndex);
+        let afterText = paragraphText.slice(actualEndIndex);
 
         // Temporarily insert the highlight into the paragraph
-        randomParagraph.innerHTML = beforeText + ' ' + highlight.outerHTML + ' ' + afterText;
+        randomParagraph.innerHTML = beforeText + highlight.outerHTML + afterText;
         // Measure the highlight
         const highlightElement = randomParagraph.querySelector('.highlight');
         const highlightHeight = highlightElement.getBoundingClientRect().height;
@@ -405,11 +418,11 @@ function selectionChangedHandler() {
     if (highlightedClasses === null)
         return;
 
-    const targetText = highlightedClasses.textContent.slice(1, -1);                 // Remove the first and last character to allow overselection
+    const targetText = highlightedClasses.textContent;                               // Get the full highlighted text without slop
     const indexOfSelection = selection.indexOf(targetText);                          // Check if the user's selection is in the highlighted text
     // console.log(selection.length, targetText.length, indexOfSelection, indexOfSelection + targetText.length);
 
-    if (indexOfSelection >= 0 && indexOfSelection <= 2 && indexOfSelection + targetText.length + 2 >= selection.length) { // Check if the user's selection is the highlighted text
+    if (selection === targetText) { // Check if the user's selection exactly matches the highlighted text
         console.log('User selected the highlighted text! Getting a new phrase.');
         removeHighlight();
         highlightRandomPhraseSelection();
@@ -445,7 +458,7 @@ function selectionChangeHandler() {
     // Set a new timer - only triggers after user stops changing selection for 500ms
     selectionChangeTimer = setTimeout(() => {
         selectionChangedHandler();
-    }, 700); // Wait 700ms of no selection changes before triggering
+    }, 1000); // Wait 1000ms of no selection changes before triggering
 }
 
 

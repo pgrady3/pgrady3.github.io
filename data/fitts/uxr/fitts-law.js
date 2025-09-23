@@ -456,7 +456,7 @@ function startExperience() {
 		fittsTest.advanceParams(300, 20);
 	}
 	else if (condition === '4') {
-		fittsTest.advanceParams(60, 20);
+		fittsTest.advanceParams(300, 12);
 	}
 	else
 	{

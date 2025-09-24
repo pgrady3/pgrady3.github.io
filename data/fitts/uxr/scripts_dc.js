@@ -369,14 +369,42 @@ function highlightRandomPhraseSelection() {
     while (true) {
         let randomParagraph = paragraphs[Math.floor(rng.random() * paragraphs.length)];
         let paragraphText = randomParagraph.textContent.replace(/\s+/g, ' ').trim();
-        let charCount = Math.floor(rng.random() * 11) + 10; // Select between 10 and 20 characters
+        let charCount = Math.floor(rng.random() * 11) + 14; // Select between 10 and 20 characters
         let startIndex = Math.floor(rng.random() * (paragraphText.length - charCount));
         let endIndex = startIndex + charCount;
         let selectedText = paragraphText.slice(startIndex, endIndex);
 
+        // Measure if the highlighted text will fit in a single line!!!
+        let highlight = document.createElement('span');
+        highlight.classList.add('highlight');
+        highlight.textContent = selectedText;
+
+        let beforeText = paragraphText.slice(0, startIndex);
+        let afterText = paragraphText.slice(endIndex);
+
+        // Temporarily insert the highlight into the paragraph
+        randomParagraph.innerHTML = beforeText + highlight.outerHTML + afterText;
+        // Measure the highlight
+        const highlightElement = randomParagraph.querySelector('.highlight');
+        const highlightHeight = highlightElement.getBoundingClientRect().height;
+        console.log('Highlighting phrase: ' + highlight.textContent);
+
+        randomParagraph.textContent = paragraphText; // Reset the paragraph
+
+        if (highlightHeight > lineHeight)
+        {
+            // If it doesn't fit, try again
+            continue
+        }
+
+        // Subtract 2 from the start/end to make sure spaces or linebreaks aren't included in the highlight. These are handled differently across browsers.
+        startIndex += 2
+        endIndex -= 2
+        selectedText = paragraphText.slice(startIndex, endIndex);
+
+
         // Trim leading and trailing spaces
         let trimmedText = selectedText.trim();
-
         // If trimmed text is too short, try again
         if (trimmedText.length < 10) {
             continue;
@@ -386,27 +414,16 @@ function highlightRandomPhraseSelection() {
         let actualStartIndex = paragraphText.indexOf(trimmedText, startIndex - (selectedText.length - trimmedText.length));
         let actualEndIndex = actualStartIndex + trimmedText.length;
 
-        let highlight = document.createElement('span');
+        highlight = document.createElement('span');
         highlight.classList.add('highlight');
         highlight.textContent = trimmedText;
-        let beforeText = paragraphText.slice(0, actualStartIndex);
-        let afterText = paragraphText.slice(actualEndIndex);
+
+        beforeText = paragraphText.slice(0, actualStartIndex);
+        afterText = paragraphText.slice(actualEndIndex);
 
         // Temporarily insert the highlight into the paragraph
         randomParagraph.innerHTML = beforeText + highlight.outerHTML + afterText;
-        // Measure the highlight
-        const highlightElement = randomParagraph.querySelector('.highlight');
-        const highlightHeight = highlightElement.getBoundingClientRect().height;
-        console.log('Highlighting phrase: ' + highlight.textContent);
-
-        if (highlightHeight <= lineHeight)
-        {
-            break;
-        }
-        else {
-            // If it doesn't fit, reset the paragraph text
-            randomParagraph.textContent = paragraphText;
-        }
+        break;
     }
 }
 

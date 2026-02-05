@@ -17,7 +17,7 @@ social: true  # includes social icons at the bottom of the page
 ---
 
 
-Hi! My name is Patrick; I'm currently a research scientist at Meta Reality Labs in Seattle, WA. I work on computer vision for understanding hands. Before joining Meta, I finished a PhD in the Robotics department at the Georgia Institute for Technology. I was advised by [Charlie Kemp](https://charliekemp.com/) and [James Hays](https://faculty.cc.gatech.edu/~hays/). My research was in computer vision and robotics, and my work focused on understanding precisely how humans and robots manipulate the world through the lens of *contact*.
+Hi! My name is Patrick; I'm currently a research scientist at Meta Reality Labs in Seattle, WA. I'm working on computer vision for decoding human motion for input. Before joining Meta, I finished a PhD in the Robotics department at the Georgia Institute for Technology. I was advised by [Charlie Kemp](https://charliekemp.com/) and [James Hays](https://faculty.cc.gatech.edu/~hays/). My research was in computer vision and robotics, and my work focused on understanding precisely how humans and robots manipulate the world through the lens of *contact*.
 
 <!-- I've had a great time interning with [Chengcheng Tang](https://scholar.google.com/citations?user=WbG27wQAAAAJ&hl=en) and [Chris Twigg](https://scholar.google.com/citations?user=aN-lQ0sAAAAJ&hl=en) at Meta Reality Labs. -->
 

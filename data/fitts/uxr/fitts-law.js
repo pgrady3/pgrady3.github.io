@@ -44,6 +44,9 @@ let lastMousePosition = { x: null, y: null };
 let conditionId;
 let conditionValue;
 
+// Session ID read from URL parameter
+let sessionId;
+
 const experienceScreen = document.getElementById('experience-screen');
 const startScreen = document.getElementById('start-screen');
 const startButton = document.getElementById('start-button');
@@ -618,6 +621,9 @@ function submitForm(trial, condition, id, ide, tp, ttc, ct, cot, te, tcd) {
     document.getElementById('condition_id').value = conditionId;
     document.getElementById('condition_value').value = conditionValue;
 
+	// Populate session ID
+	document.getElementById('session_id').value = sessionId;
+
     // Dispatch a synthetic submit event
     form.dispatchEvent(new Event('submit', { cancelable: true }));
 }
@@ -637,6 +643,12 @@ function initButtonPad() {
     if (userIdFromUrl) {
         participantIdInput.value = userIdFromUrl;
         console.log('Participant ID set from URL parameter: ' + userIdFromUrl);
+    }
+
+    // Check for session_id URL parameter
+    sessionId = getUrlParameter('session_id');
+    if (sessionId) {
+        console.log('Session ID set from URL parameter: ' + sessionId);
     }
 
     buttons.forEach(button => {

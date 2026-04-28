@@ -306,7 +306,7 @@ button {
 }
 
 #zoom-target-outline-inner {
-    border: 3px solid #e53935;
+    border: 3px dashed #e53935;
 }
 
 .zoom-inner-square {
@@ -314,6 +314,6 @@ button {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #44afd3;
+    background-color: #7ec8e3;
     z-index: 1;
 }

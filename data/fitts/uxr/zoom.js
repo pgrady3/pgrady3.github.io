@@ -2,7 +2,7 @@
  * (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
  */
 
-const MAX_ZOOM_TRIALS = 6;
+const MAX_ZOOM_TRIALS = 10;
 const ZOOM_SENSITIVITY = 0.00125;
 const ZOOM_TOLERANCE = 0.08;
 const ZOOM_HOLD_TIME = 300;
@@ -17,6 +17,7 @@ let zoomInnerBaseSize = 0;
 let zoomHoldTimeout = null;
 let touchStartDist = 0;
 let touchStartZoomScale = 1.0;
+const TOUCH_ZOOM_SENSITIVITY = 1 / 2.5;
 
 // Mouse scroll wheel — zoom without any modifier key
 document.addEventListener('wheel', (e) => {
@@ -43,7 +44,8 @@ document.addEventListener('touchmove', (e) => {
         e.preventDefault();
         const dist = touchDist(e);
         const ratio = dist / touchStartDist;
-        zoomCurrentScale = touchStartZoomScale * ratio;
+        const dampenedRatio = 1 + (ratio - 1) * TOUCH_ZOOM_SENSITIVITY;
+        zoomCurrentScale = touchStartZoomScale * dampenedRatio;
         zoomCurrentScale = Math.max(ZOOM_MIN_SCALE, Math.min(ZOOM_MAX_SCALE, zoomCurrentScale));
         console.log(`[zoom] pinch: zoomCurrentScale=${zoomCurrentScale.toFixed(3)}, currentSize=${(zoomInnerBaseSize * zoomCurrentScale).toFixed(1)}, targetSize=${zoomTargetSize.toFixed(1)}, ratio=${(zoomInnerBaseSize * zoomCurrentScale / zoomTargetSize).toFixed(3)}`);
         updateZoomUI();
@@ -59,7 +61,8 @@ document.addEventListener('gesturestart', (e) => {
 
 document.addEventListener('gesturechange', (e) => {
     e.preventDefault();
-    zoomCurrentScale = touchStartZoomScale * e.scale;
+    const dampenedScale = 1 + (e.scale - 1) * TOUCH_ZOOM_SENSITIVITY;
+    zoomCurrentScale = touchStartZoomScale * dampenedScale;
     zoomCurrentScale = Math.max(ZOOM_MIN_SCALE, Math.min(ZOOM_MAX_SCALE, zoomCurrentScale));
     updateZoomUI();
     checkZoomMatch();

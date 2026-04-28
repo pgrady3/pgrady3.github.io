@@ -41,12 +41,6 @@ let dragCount = 0;    // Counter for start-stop movements
 let stopTimeout;      // Timer to detect when the mouse stops
 let lastMousePosition = { x: null, y: null };
 
-let conditionId;
-let conditionValue;
-
-// Session ID read from URL parameter
-let sessionId;
-
 const experienceScreen = document.getElementById('experience-screen');
 const startScreen = document.getElementById('start-screen');
 const startButton = document.getElementById('start-button');
@@ -617,40 +611,13 @@ function submitForm(trial, condition, id, ide, tp, ttc, ct, cot, te, tcd) {
 	// Add total cursor distance
 	document.getElementById('total_cursor_distance').value = tcd;
 
-	// Populate condition fields
-    document.getElementById('condition_id').value = conditionId;
-    document.getElementById('condition_value').value = conditionValue;
-
-	// Populate session ID
-	document.getElementById('session_id').value = sessionId;
-
     // Dispatch a synthetic submit event
     form.dispatchEvent(new Event('submit', { cancelable: true }));
-}
-
-// Function to get URL parameters
-function getUrlParameter(name) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
 }
 
 function initButtonPad() {
     const participantIdInput = document.getElementById('button-pad-id');
     const buttons = document.querySelectorAll('.button-pad button');
-
-    // Check for user_id URL parameter and populate the ID field
-    const userIdFromUrl = getUrlParameter('user_id');
-    if (userIdFromUrl) {
-        participantIdInput.value = userIdFromUrl;
-        console.log('Participant ID set from URL parameter: ' + userIdFromUrl);
-    }
-
-    // Check for session_id URL parameter
-    sessionId = getUrlParameter('session_id');
-    if (sessionId) {
-        console.log('Session ID set from URL parameter: ' + sessionId);
-    }
-
     buttons.forEach(button => {
         button.addEventListener('click', () => {
             if (button.textContent === 'C') {
@@ -661,58 +628,6 @@ function initButtonPad() {
         });
     });
 }
-
-// register listener for data passed to WebView from Unity
-window.addEventListener('vuplexmessage', event => {
-	const data = JSON.parse(event.value);
-	console.log("received condition data: " + data.conditionId + ", " + data.conditionValue);
-	if (data.conditionId){
-		conditionId = data.conditionId;
-	}
-	if (data.conditionValue){
-		conditionValue = data.conditionValue;
-	}
-});
-
-// Test function to simulate Vuplex messages with mock data
-// Usage: Call testVuplexMessage() from browser console or testVuplexMessage({conditionId: "5", conditionValue: "CustomCondition"})
-function testVuplexMessage(mockData) {
-    const defaultMockData = {
-        conditionId: "42",
-        conditionValue: "TestCondition_Mock"
-    };
-
-    const data = mockData || defaultMockData;
-
-    // Create a mock event that mimics the Vuplex message structure
-    const mockEvent = new CustomEvent('vuplexmessage', {
-        detail: data
-    });
-    mockEvent.value = JSON.stringify(data);
-
-    console.log("=== Testing Vuplex Message Integration ===");
-    console.log("Dispatching mock vuplexmessage with data:", data);
-
-    // Dispatch the mock event
-    window.dispatchEvent(mockEvent);
-
-    // Verify the values were set correctly
-    console.log("After dispatch - conditionId:", conditionId);
-    console.log("After dispatch - conditionValue:", conditionValue);
-
-    // Check if values match expected
-    const success = conditionId === data.conditionId && conditionValue === data.conditionValue;
-    if (success) {
-        console.log("✅ TEST PASSED: Vuplex message integration working correctly!");
-    } else {
-        console.error("❌ TEST FAILED: Values not set correctly");
-    }
-
-    return { conditionId, conditionValue, success };
-}
-
-// Expose test function globally for console access
-window.testVuplexMessage = testVuplexMessage;
 
 window.addEventListener('load', initButtonPad);
 startButton.addEventListener('click', startExperience);

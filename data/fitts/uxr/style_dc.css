@@ -282,3 +282,35 @@ button {
     visibility: hidden; /* Makes the button invisible */
     pointer-events: none; /* Disables click events */
 }
+
+#zoom-body {
+    width: 100vw;
+    height: 100vh;
+    background: #EFEFEF;
+    position: relative;
+}
+
+.zoom-target-outline {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 3px solid #b86dc2;
+    background-color: transparent;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.zoom-inner-square {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #44afd3;
+    transition: background-color 0.3s;
+    z-index: 1;
+}
+
+.zoom-inner-square.zoom-match {
+    background-color: #76803b;
+}

@@ -535,7 +535,7 @@ function startTimer() {
 
 		elapsed = timestamp - startTime;
 		document.getElementById('text-top-left').innerText = (elapsed / 1000).toFixed(2);
-		if ((EXPERIENCE_NAME == "Scroll" && successfulClicks >= MAX_SCROLL_TRIALS) || (EXPERIENCE_NAME == "Text Selection" && successfulClicks >= MAX_SELECTION_TRIALS)) {
+		if ((EXPERIENCE_NAME == "Scroll" && successfulClicks >= MAX_SCROLL_TRIALS) || (EXPERIENCE_NAME == "Text Selection" && successfulClicks >= MAX_SELECTION_TRIALS) || (EXPERIENCE_NAME == "Zoom" && typeof MAX_ZOOM_TRIALS !== 'undefined' && successfulClicks >= MAX_ZOOM_TRIALS)) {
 			console.log('stop timer');
 			return;
 		}

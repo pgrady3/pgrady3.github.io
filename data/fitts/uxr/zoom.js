@@ -15,72 +15,56 @@ let zoomCurrentScale = 1.0;
 let zoomTargetSize = 0;
 let zoomInnerBaseSize = 0;
 let zoomHoldTimeout = null;
-let gestureStartScale = 1.0;
-let debugLogEl = null;
-let debugLineCount = 0;
+let touchStartDist = 0;
+let touchStartZoomScale = 1.0;
 
-function debugLog(msg) {
-    if (!debugLogEl) return;
-    debugLineCount++;
-    const line = document.createElement('div');
-    line.textContent = `[${debugLineCount}] ${msg}`;
-    debugLogEl.appendChild(line);
-    debugLogEl.scrollTop = debugLogEl.scrollHeight;
+// Mouse scroll wheel — zoom without any modifier key
+document.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    applyZoomDelta(e.deltaY, e.deltaMode);
+}, { passive: false });
+
+// Two-finger touch pinch
+function touchDist(e) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
 }
 
-// --- Register all possible zoom input handlers at load time ---
-
-// 1. wheel events (Chrome/Edge trackpad pinch fires wheel with ctrlKey=true)
-document.addEventListener('wheel', (e) => {
-    debugLog(`wheel: deltaY=${e.deltaY.toFixed(2)} ctrlKey=${e.ctrlKey} deltaMode=${e.deltaMode}`);
-    if (e.ctrlKey) {
-        e.preventDefault();
-        applyZoomDelta(e.deltaY, e.deltaMode);
+document.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+        touchStartDist = touchDist(e);
+        touchStartZoomScale = zoomCurrentScale;
     }
 }, { passive: false });
 
-// 2. gesturestart/gesturechange/gestureend (Safari pinch)
+document.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2) {
+        e.preventDefault();
+        const dist = touchDist(e);
+        const ratio = dist / touchStartDist;
+        zoomCurrentScale = touchStartZoomScale * ratio;
+        zoomCurrentScale = Math.max(ZOOM_MIN_SCALE, Math.min(ZOOM_MAX_SCALE, zoomCurrentScale));
+        updateZoomUI();
+        checkZoomMatch();
+    }
+}, { passive: false });
+
+// Safari gesture events
 document.addEventListener('gesturestart', (e) => {
     e.preventDefault();
-    gestureStartScale = zoomCurrentScale;
-    debugLog(`gesturestart: scale=${e.scale.toFixed(3)}`);
+    touchStartZoomScale = zoomCurrentScale;
 });
 
 document.addEventListener('gesturechange', (e) => {
     e.preventDefault();
-    debugLog(`gesturechange: scale=${e.scale.toFixed(3)}`);
-    zoomCurrentScale = gestureStartScale * e.scale;
+    zoomCurrentScale = touchStartZoomScale * e.scale;
     zoomCurrentScale = Math.max(ZOOM_MIN_SCALE, Math.min(ZOOM_MAX_SCALE, zoomCurrentScale));
     updateZoomUI();
     checkZoomMatch();
 });
 
-document.addEventListener('gestureend', (e) => {
-    e.preventDefault();
-    debugLog(`gestureend: scale=${e.scale.toFixed(3)}`);
-});
-
-// 3. touchstart/touchmove/touchend (raw touch — log finger count)
-document.addEventListener('touchstart', (e) => {
-    debugLog(`touchstart: touches=${e.touches.length}`);
-}, { passive: true });
-
-document.addEventListener('touchmove', (e) => {
-    if (e.touches.length >= 2) {
-        debugLog(`touchmove: touches=${e.touches.length} t0=(${e.touches[0].clientX.toFixed(0)},${e.touches[0].clientY.toFixed(0)}) t1=(${e.touches[1].clientX.toFixed(0)},${e.touches[1].clientY.toFixed(0)})`);
-    }
-}, { passive: true });
-
-document.addEventListener('touchend', (e) => {
-    debugLog(`touchend: remaining=${e.touches.length}`);
-}, { passive: true });
-
-// 4. pointerdown/pointermove (log pointer type)
-document.addEventListener('pointerdown', (e) => {
-    debugLog(`pointerdown: type=${e.pointerType} id=${e.pointerId} (${e.clientX.toFixed(0)},${e.clientY.toFixed(0)})`);
-}, { passive: true });
-
-// --- Zoom logic ---
+document.addEventListener('gestureend', (e) => e.preventDefault());
 
 function applyZoomDelta(deltaY, deltaMode) {
     if (!zoomInnerBaseSize) return;
@@ -132,8 +116,6 @@ function generateZoomTarget() {
     innerSquare.style.width = `${innerSize}px`;
     innerSquare.style.height = `${innerSize}px`;
     innerSquare.classList.remove('zoom-match');
-
-    debugLog(`new target: scale=${targetScale.toFixed(2)} size=${zoomTargetSize.toFixed(0)}px`);
 }
 
 function checkZoomMatch() {
@@ -166,7 +148,6 @@ function checkZoomMatch() {
 
 function onZoomSuccess() {
     successfulClicks += 1;
-    debugLog('zoom completed - trial ' + successfulClicks);
     playChime(true);
 
     if (successfulClicks >= MAX_ZOOM_TRIALS) {
@@ -193,9 +174,6 @@ function startZoomExperience() {
 
     document.getElementById('start-screen').style.display = "none";
     document.getElementById('zoom-body').style.display = "";
-
-    debugLogEl = document.getElementById('debug-log');
-    debugLog('Experience started. Pinch/zoom to see which events fire.');
 
     generateZoomTarget();
 

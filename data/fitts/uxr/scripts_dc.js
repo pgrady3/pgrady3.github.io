@@ -26,6 +26,9 @@ let trialNum = 1;
 let gestureCount = 0;
 let isGesturing = false;
 let gestureStopTimeout = null;
+let lastScrollDelta = 0;
+let lastScrollTime = 0;
+let scrollDecelerating = false;
 
 class RandomGenerator {
     constructor(seed) {
@@ -78,6 +81,32 @@ function trackGesture(timeout = 200) {
     gestureStopTimeout = setTimeout(() => {
         isGesturing = false;
     }, timeout);
+}
+
+function trackScrollGesture(deltaY) {
+    const now = performance.now();
+    const absDelta = Math.abs(deltaY);
+    const timeSinceLast = now - lastScrollTime;
+    if (lastScrollDelta === 0 || timeSinceLast > 200) {
+        gestureCount++;
+        console.log(`[gesture] new scroll gesture #${gestureCount} (gap=${timeSinceLast.toFixed(0)}ms)`);
+        scrollDecelerating = false;
+    } else if (scrollDecelerating && absDelta > lastScrollDelta * 1.5) {
+        gestureCount++;
+        console.log(`[gesture] new scroll gesture #${gestureCount} (accel after decel)`);
+        scrollDecelerating = false;
+    }
+    if (absDelta < lastScrollDelta * 0.85) {
+        scrollDecelerating = true;
+    } else if (absDelta > lastScrollDelta) {
+        scrollDecelerating = false;
+    }
+    lastScrollDelta = absDelta;
+    lastScrollTime = now;
+}
+
+function onWheelCallback(e) {
+    trackScrollGesture(e.deltaY);
 }
 
 function checkClick(e, clickMethod) {
@@ -273,6 +302,7 @@ function highlightRandomPhraseScroll() {
         removeHighlight();
 
         document.getElementById('scroll-body').removeEventListener('scroll', onScrollCallback);
+        document.getElementById('scroll-container').removeEventListener('wheel', onWheelCallback);
 
         let startText = document.getElementById('start-text');
         let elapsedStr = (elapsed / 1000).toFixed(2)
@@ -341,7 +371,6 @@ function showUpDownArrows() {
 }
 
 function onScrollCallback() {
-    trackGesture(100);
     // If the highlight is in the target box, wait and check again. If still in, make a new highlight
     clearTimeout(highlightTimeout);
     showUpDownArrows();
@@ -363,11 +392,15 @@ function startScrollExperience() {
     rng = new RandomGenerator();
     successfulClicks = 0;
     gestureCount = 0;
+    lastScrollDelta = 0;
+    lastScrollTime = 0;
+    scrollDecelerating = false;
     loadChimes();
     document.getElementById('start-screen').style.display = "none";
     document.getElementById('scroll-body').style.display = "";
 
     document.getElementById('scroll-container').addEventListener('scroll', onScrollCallback);
+    document.getElementById('scroll-container').addEventListener('wheel', onWheelCallback, { passive: true });
 
     document.getElementById('scroll-container').scrollTop = 0;
 

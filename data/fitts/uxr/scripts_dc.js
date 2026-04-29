@@ -23,6 +23,9 @@ let errorChime;
 let rng;
 let elapsed = 0;
 let trialNum = 1;
+let gestureCount = 0;
+let isGesturing = false;
+let gestureStopTimeout = null;
 
 class RandomGenerator {
     constructor(seed) {
@@ -63,6 +66,18 @@ function playChime(success) {
     } else {
         errorChime.play();
     }
+}
+
+function trackGesture(timeout = 200) {
+    if (!isGesturing) {
+        isGesturing = true;
+        gestureCount++;
+        console.log(`[gesture] new gesture #${gestureCount}`);
+    }
+    clearTimeout(gestureStopTimeout);
+    gestureStopTimeout = setTimeout(() => {
+        isGesturing = false;
+    }, timeout);
 }
 
 function checkClick(e, clickMethod) {
@@ -261,8 +276,8 @@ function highlightRandomPhraseScroll() {
 
         let startText = document.getElementById('start-text');
         let elapsedStr = (elapsed / 1000).toFixed(2)
-        startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s\n` + startText.innerText;
-        submitForm(trialNum, elapsedStr);
+        startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
+        submitForm(trialNum, elapsedStr, gestureCount);
         trialNum += 1;
     }
 }
@@ -326,6 +341,7 @@ function showUpDownArrows() {
 }
 
 function onScrollCallback() {
+    trackGesture(100);
     // If the highlight is in the target box, wait and check again. If still in, make a new highlight
     clearTimeout(highlightTimeout);
     showUpDownArrows();
@@ -346,6 +362,7 @@ function onScrollCallback() {
 function startScrollExperience() {
     rng = new RandomGenerator();
     successfulClicks = 0;
+    gestureCount = 0;
     loadChimes();
     document.getElementById('start-screen').style.display = "none";
     document.getElementById('scroll-body').style.display = "";
@@ -429,6 +446,7 @@ function highlightRandomPhraseSelection() {
 
 
 function selectionChangedHandler() {
+    trackGesture();
     const selection = window.getSelection().toString();                    // Get the user's selection
     const highlightedClasses = document.querySelector('.highlight');     // Get the highlighted text
 
@@ -458,8 +476,8 @@ function selectionChangedHandler() {
 
             let startText = document.getElementById('start-text');
             let elapsedStr = (elapsed / 1000).toFixed(2)
-            startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s\n` + startText.innerText;
-            submitForm(trialNum, elapsedStr);
+            startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
+            submitForm(trialNum, elapsedStr, gestureCount);
 
             trialNum += 1;
         }
@@ -506,6 +524,7 @@ function removeExcessParagraphs() {
 function startTextSelectionExperience() {
     rng = new RandomGenerator();
     successfulClicks = 0;
+    gestureCount = 0;
     loadChimes();
     document.getElementById('start-screen').style.display = "none";
     document.getElementById('textselection-body').style.display = "";
@@ -544,7 +563,7 @@ function startTimer() {
 	window.requestAnimationFrame(loop);
 }
 
-function submitForm(trial, ttc) {
+function submitForm(trial, ttc, gestures) {
     const form = document.getElementById('bootstrapForm');
 
     if (!form.dataset.submitHandlerAdded) {
@@ -572,6 +591,10 @@ function submitForm(trial, ttc) {
     document.getElementById('participant_id').value = document.getElementById('button-pad-id').value;
     document.getElementById('trial_num').value = trial;
     document.getElementById('time_to_complete').value = ttc;
+    if (gestures !== undefined) {
+        const gestureInput = document.getElementById('gesture_count');
+        if (gestureInput) gestureInput.value = gestures;
+    }
 
     // Dispatch a synthetic submit event
     form.dispatchEvent(new Event('submit', { cancelable: true }));

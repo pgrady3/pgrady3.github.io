@@ -10,17 +10,21 @@ const ZOOM_MIN_SCALE = 0.4;
 const ZOOM_MAX_SCALE = 2.5;
 const ZOOM_TARGET_SCALE_MIN = 0.55;
 const ZOOM_TARGET_SCALE_MAX = 1.8;
+const ZOOM_OUTLINE_BORDER_PX = 3;
 
 let zoomCurrentScale = 1.0;
 let zoomTargetSize = 0;
+let zoomMinSize = 0;
+let zoomMaxSize = 0;
 let zoomInnerBaseSize = 0;
 let zoomHoldTimeout = null;
 let touchStartDist = 0;
 let touchStartZoomScale = 1.0;
 const TOUCH_ZOOM_SENSITIVITY = 1 / 2.5;
 
-// Mouse scroll wheel — zoom without any modifier key
+// CTRL+scroll wheel — zoom only with CTRL held (ignore plain mouse scroll)
 document.addEventListener('wheel', (e) => {
+    if (!e.ctrlKey) return;
     e.preventDefault();
     applyZoomDelta(e.deltaY, e.deltaMode);
 }, { passive: false });
@@ -42,12 +46,12 @@ document.addEventListener('touchstart', (e) => {
 document.addEventListener('touchmove', (e) => {
     if (e.touches.length === 2) {
         e.preventDefault();
+        trackGesture();
         const dist = touchDist(e);
         const ratio = dist / touchStartDist;
         const dampenedRatio = 1 + (ratio - 1) * TOUCH_ZOOM_SENSITIVITY;
         zoomCurrentScale = touchStartZoomScale * dampenedRatio;
         zoomCurrentScale = Math.max(ZOOM_MIN_SCALE, Math.min(ZOOM_MAX_SCALE, zoomCurrentScale));
-        console.log(`[zoom] pinch: zoomCurrentScale=${zoomCurrentScale.toFixed(3)}, currentSize=${(zoomInnerBaseSize * zoomCurrentScale).toFixed(1)}, targetSize=${zoomTargetSize.toFixed(1)}, ratio=${(zoomInnerBaseSize * zoomCurrentScale / zoomTargetSize).toFixed(3)}`);
         updateZoomUI();
         checkZoomMatch();
     }
@@ -61,6 +65,7 @@ document.addEventListener('gesturestart', (e) => {
 
 document.addEventListener('gesturechange', (e) => {
     e.preventDefault();
+    trackGesture();
     const dampenedScale = 1 + (e.scale - 1) * TOUCH_ZOOM_SENSITIVITY;
     zoomCurrentScale = touchStartZoomScale * dampenedScale;
     zoomCurrentScale = Math.max(ZOOM_MIN_SCALE, Math.min(ZOOM_MAX_SCALE, zoomCurrentScale));
@@ -72,6 +77,7 @@ document.addEventListener('gestureend', (e) => e.preventDefault());
 
 function applyZoomDelta(deltaY, deltaMode) {
     if (!zoomInnerBaseSize) return;
+    trackGesture();
 
     let normalizedDeltaY = deltaY;
     if (deltaMode === 1) {
@@ -82,7 +88,6 @@ function applyZoomDelta(deltaY, deltaMode) {
 
     zoomCurrentScale -= normalizedDeltaY * ZOOM_SENSITIVITY;
     zoomCurrentScale = Math.max(ZOOM_MIN_SCALE, Math.min(ZOOM_MAX_SCALE, zoomCurrentScale));
-    console.log(`[zoom] applyDelta: zoomCurrentScale=${zoomCurrentScale.toFixed(3)}, currentSize=${(zoomInnerBaseSize * zoomCurrentScale).toFixed(1)}, targetSize=${zoomTargetSize.toFixed(1)}, ratio=${(zoomInnerBaseSize * zoomCurrentScale / zoomTargetSize).toFixed(3)}`);
     updateZoomUI();
     checkZoomMatch();
 }
@@ -110,27 +115,29 @@ function generateZoomTarget() {
 
     zoomTargetSize = zoomInnerBaseSize * targetScale;
     zoomCurrentScale = 1.0;
-    console.log(`[zoom] new target: targetScale=${targetScale.toFixed(3)}, zoomTargetSize=${zoomTargetSize.toFixed(1)}, zoomInnerBaseSize=${zoomInnerBaseSize.toFixed(1)}, ZOOM_MIN_SCALE=${ZOOM_MIN_SCALE}, ZOOM_MAX_SCALE=${ZOOM_MAX_SCALE}`);
 
-    const innerSize = zoomInnerBaseSize * zoomCurrentScale;
+    // Adaptive tolerance: more forgiving when blue is far from target (baked at initial ratio=1.0)
+    const adaptiveBonus = 0.03;
+    const tolerance = ZOOM_TOLERANCE + adaptiveBonus;
 
-    // Compute tolerance band outlines
-    const ratio = 1.0; // current/target ratio at start
-    const tolerance = ZOOM_TOLERANCE + (0.03 / Math.max(ratio, 0.3));
-    const outerTargetSize = zoomTargetSize * (1 + tolerance);
-    const innerTargetSize = zoomTargetSize * (1 - tolerance);
+    const outerOutlineSize = zoomTargetSize * (1 + tolerance);
+    const innerOutlineSize = zoomTargetSize * (1 - tolerance);
+
+    // Success bounds: can't go past outer outline; touching inner outline's border = success
+    zoomMaxSize = outerOutlineSize;
+    zoomMinSize = innerOutlineSize - 2 * ZOOM_OUTLINE_BORDER_PX;
 
     const outerOutline = document.getElementById('zoom-target-outline-outer');
-    outerOutline.style.width = `${outerTargetSize}px`;
-    outerOutline.style.height = `${outerTargetSize}px`;
+    outerOutline.style.width = `${outerOutlineSize}px`;
+    outerOutline.style.height = `${outerOutlineSize}px`;
 
     const innerOutline = document.getElementById('zoom-target-outline-inner');
-    innerOutline.style.width = `${innerTargetSize}px`;
-    innerOutline.style.height = `${innerTargetSize}px`;
+    innerOutline.style.width = `${innerOutlineSize}px`;
+    innerOutline.style.height = `${innerOutlineSize}px`;
 
     const innerSquare = document.getElementById('zoom-inner-square');
-    innerSquare.style.width = `${innerSize}px`;
-    innerSquare.style.height = `${innerSize}px`;
+    innerSquare.style.width = `${zoomInnerBaseSize}px`;
+    innerSquare.style.height = `${zoomInnerBaseSize}px`;
 }
 
 function checkZoomMatch() {
@@ -140,15 +147,10 @@ function checkZoomMatch() {
     }
 
     const currentSize = zoomInnerBaseSize * zoomCurrentScale;
-    const ratio = currentSize / zoomTargetSize;
-
-    const adaptiveTolerance = ZOOM_TOLERANCE + (0.03 / Math.max(ratio, 0.3));
-    if (ratio >= 1 - adaptiveTolerance && ratio <= 1 + adaptiveTolerance) {
+    if (currentSize >= zoomMinSize && currentSize <= zoomMaxSize) {
         zoomHoldTimeout = setTimeout(() => {
             const recheckSize = zoomInnerBaseSize * zoomCurrentScale;
-            const recheckRatio = recheckSize / zoomTargetSize;
-            const recheckTolerance = ZOOM_TOLERANCE + (0.03 / Math.max(recheckRatio, 0.3));
-            if (recheckRatio >= 1 - recheckTolerance && recheckRatio <= 1 + recheckTolerance) {
+            if (recheckSize >= zoomMinSize && recheckSize <= zoomMaxSize) {
                 onZoomSuccess();
             }
         }, ZOOM_HOLD_TIME);
@@ -156,6 +158,8 @@ function checkZoomMatch() {
 }
 
 function onZoomSuccess() {
+    // Guard against duplicate submissions from lingering scroll/touch events
+    if (successfulClicks >= MAX_ZOOM_TRIALS) return;
     successfulClicks += 1;
     playChime(true);
 
@@ -165,8 +169,8 @@ function onZoomSuccess() {
 
         let startText = document.getElementById('start-text');
         let elapsedStr = (elapsed / 1000).toFixed(2);
-        startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s\n` + startText.innerText;
-        submitForm(trialNum, elapsedStr);
+        startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
+        submitForm(trialNum, elapsedStr, gestureCount);
         trialNum += 1;
     } else {
         generateZoomTarget();
@@ -176,6 +180,7 @@ function onZoomSuccess() {
 function startZoomExperience() {
     rng = new RandomGenerator();
     successfulClicks = 0;
+    gestureCount = 0;
     loadChimes();
 
     zoomCurrentScale = 1.0;

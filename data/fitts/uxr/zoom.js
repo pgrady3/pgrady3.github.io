@@ -42,12 +42,12 @@ document.addEventListener('touchstart', (e) => {
 document.addEventListener('touchmove', (e) => {
     if (e.touches.length === 2) {
         e.preventDefault();
+        trackGesture();
         const dist = touchDist(e);
         const ratio = dist / touchStartDist;
         const dampenedRatio = 1 + (ratio - 1) * TOUCH_ZOOM_SENSITIVITY;
         zoomCurrentScale = touchStartZoomScale * dampenedRatio;
         zoomCurrentScale = Math.max(ZOOM_MIN_SCALE, Math.min(ZOOM_MAX_SCALE, zoomCurrentScale));
-        console.log(`[zoom] pinch: zoomCurrentScale=${zoomCurrentScale.toFixed(3)}, currentSize=${(zoomInnerBaseSize * zoomCurrentScale).toFixed(1)}, targetSize=${zoomTargetSize.toFixed(1)}, ratio=${(zoomInnerBaseSize * zoomCurrentScale / zoomTargetSize).toFixed(3)}`);
         updateZoomUI();
         checkZoomMatch();
     }
@@ -61,6 +61,7 @@ document.addEventListener('gesturestart', (e) => {
 
 document.addEventListener('gesturechange', (e) => {
     e.preventDefault();
+    trackGesture();
     const dampenedScale = 1 + (e.scale - 1) * TOUCH_ZOOM_SENSITIVITY;
     zoomCurrentScale = touchStartZoomScale * dampenedScale;
     zoomCurrentScale = Math.max(ZOOM_MIN_SCALE, Math.min(ZOOM_MAX_SCALE, zoomCurrentScale));
@@ -72,6 +73,7 @@ document.addEventListener('gestureend', (e) => e.preventDefault());
 
 function applyZoomDelta(deltaY, deltaMode) {
     if (!zoomInnerBaseSize) return;
+    trackGesture();
 
     let normalizedDeltaY = deltaY;
     if (deltaMode === 1) {
@@ -82,7 +84,6 @@ function applyZoomDelta(deltaY, deltaMode) {
 
     zoomCurrentScale -= normalizedDeltaY * ZOOM_SENSITIVITY;
     zoomCurrentScale = Math.max(ZOOM_MIN_SCALE, Math.min(ZOOM_MAX_SCALE, zoomCurrentScale));
-    console.log(`[zoom] applyDelta: zoomCurrentScale=${zoomCurrentScale.toFixed(3)}, currentSize=${(zoomInnerBaseSize * zoomCurrentScale).toFixed(1)}, targetSize=${zoomTargetSize.toFixed(1)}, ratio=${(zoomInnerBaseSize * zoomCurrentScale / zoomTargetSize).toFixed(3)}`);
     updateZoomUI();
     checkZoomMatch();
 }
@@ -110,8 +111,6 @@ function generateZoomTarget() {
 
     zoomTargetSize = zoomInnerBaseSize * targetScale;
     zoomCurrentScale = 1.0;
-    console.log(`[zoom] new target: targetScale=${targetScale.toFixed(3)}, zoomTargetSize=${zoomTargetSize.toFixed(1)}, zoomInnerBaseSize=${zoomInnerBaseSize.toFixed(1)}, ZOOM_MIN_SCALE=${ZOOM_MIN_SCALE}, ZOOM_MAX_SCALE=${ZOOM_MAX_SCALE}`);
-
     const innerSize = zoomInnerBaseSize * zoomCurrentScale;
 
     // Compute tolerance band outlines
@@ -156,6 +155,8 @@ function checkZoomMatch() {
 }
 
 function onZoomSuccess() {
+    // Guard against duplicate submissions from lingering scroll/touch events
+    if (successfulClicks >= MAX_ZOOM_TRIALS) return;
     successfulClicks += 1;
     playChime(true);
 
@@ -165,8 +166,8 @@ function onZoomSuccess() {
 
         let startText = document.getElementById('start-text');
         let elapsedStr = (elapsed / 1000).toFixed(2);
-        startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s\n` + startText.innerText;
-        submitForm(trialNum, elapsedStr);
+        startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
+        submitForm(trialNum, elapsedStr, gestureCount);
         trialNum += 1;
     } else {
         generateZoomTarget();
@@ -176,6 +177,7 @@ function onZoomSuccess() {
 function startZoomExperience() {
     rng = new RandomGenerator();
     successfulClicks = 0;
+    gestureCount = 0;
     loadChimes();
 
     zoomCurrentScale = 1.0;

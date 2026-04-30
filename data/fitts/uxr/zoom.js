@@ -98,6 +98,8 @@ function updateZoomUI() {
     if (!innerSquare) return;
     innerSquare.style.width = `${currentSize}px`;
     innerSquare.style.height = `${currentSize}px`;
+    const inBounds = currentSize >= zoomMinSize && currentSize <= zoomMaxSize;
+    innerSquare.style.backgroundColor = inBounds ? '#81c784' : '#7ec8e3';
 }
 
 function generateZoomTarget() {
@@ -135,9 +137,7 @@ function generateZoomTarget() {
     innerOutline.style.width = `${innerOutlineSize}px`;
     innerOutline.style.height = `${innerOutlineSize}px`;
 
-    const innerSquare = document.getElementById('zoom-inner-square');
-    innerSquare.style.width = `${zoomInnerBaseSize}px`;
-    innerSquare.style.height = `${zoomInnerBaseSize}px`;
+    updateZoomUI();
 }
 
 function checkZoomMatch() {

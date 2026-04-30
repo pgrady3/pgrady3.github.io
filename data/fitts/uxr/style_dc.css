@@ -302,11 +302,11 @@ button {
 }
 
 #zoom-target-outline-outer {
-    border: 3px solid #4caf50;
+    border: 3px solid #555;
 }
 
 #zoom-target-outline-inner {
-    border: 3px dashed #e53935;
+    border: 3px solid #555;
 }
 
 .zoom-inner-square {

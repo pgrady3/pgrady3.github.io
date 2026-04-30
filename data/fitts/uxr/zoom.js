@@ -4,7 +4,7 @@
 
 const MAX_ZOOM_TRIALS = 10;
 const ZOOM_SENSITIVITY = 0.00125;
-const ZOOM_TOLERANCE = 0.08;
+const ZOOM_TOLERANCE = 0.04;
 const ZOOM_HOLD_TIME = 300;
 const ZOOM_MIN_SCALE = 0.4;
 const ZOOM_MAX_SCALE = 2.5;
@@ -118,12 +118,8 @@ function generateZoomTarget() {
     zoomTargetSize = zoomInnerBaseSize * targetScale;
     zoomCurrentScale = 1.0;
 
-    // Adaptive tolerance: more forgiving when blue is far from target (baked at initial ratio=1.0)
-    const adaptiveBonus = 0.03;
-    const tolerance = ZOOM_TOLERANCE + adaptiveBonus;
-
-    const outerOutlineSize = zoomTargetSize * (1 + tolerance);
-    const innerOutlineSize = zoomTargetSize * (1 - tolerance);
+    const outerOutlineSize = zoomTargetSize * (1 + ZOOM_TOLERANCE);
+    const innerOutlineSize = zoomTargetSize * (1 - ZOOM_TOLERANCE);
 
     // Success bounds: can't go past outer outline; touching inner outline's border = success
     zoomMaxSize = outerOutlineSize;

@@ -26,6 +26,7 @@ let trialNum = 1;
 let gestureCount = 0;
 let isGesturing = false;
 let gestureStopTimeout = null;
+let sessionId;
 
 class RandomGenerator {
     constructor(seed) {
@@ -595,19 +596,38 @@ function submitForm(trial, ttc, gestures) {
         const gestureInput = document.getElementById('gesture_count');
         if (gestureInput) gestureInput.value = gestures;
     }
+    const sessionInput = document.getElementById('session_id');
+    if (sessionInput) sessionInput.value = sessionId;
 
     // Dispatch a synthetic submit event
     form.dispatchEvent(new Event('submit', { cancelable: true }));
 }
 
+function getUrlParameter(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
 function initButtonPad() {
     const participantIdInput = document.getElementById('button-pad-id');
     const buttons = document.querySelectorAll('.button-pad button');
+
+    const userIdFromUrl = getUrlParameter('user_id');
+    if (userIdFromUrl) {
+        participantIdInput.value = userIdFromUrl;
+        console.log('Participant ID set from URL parameter: ' + userIdFromUrl);
+    }
+
+    sessionId = getUrlParameter('session_id');
+    if (sessionId) {
+        console.log('Session ID set from URL parameter: ' + sessionId);
+    }
+
     buttons.forEach(button => {
         button.addEventListener('click', () => {
             if (button.textContent === 'C') {
                 participantIdInput.value = '';
-            } else if (participantIdInput.value.length < 2) {
+            } else if (participantIdInput.value.length < 4) {
                 participantIdInput.value += button.textContent;
             }
         });

@@ -105,31 +105,7 @@
 
     <div class="start-screen" id="start-screen">
         <div class="start-controls">
-			<div class="button-pad">
-				<input type="text" id="button-pad-id" placeholder="ID #" disabled>
-				<div class="row">
-					<button>1</button>
-					<button>2</button>
-					<button>3</button>
-				</div>
-				<div class="row">
-					<button>4</button>
-					<button>5</button>
-					<button>6</button>
-				</div>
-				<div class="row">
-					<button>7</button>
-					<button>8</button>
-					<button>9</button>
-				</div>
-				<div class="row">
-					<button class="hidden-button">H</button>
-					<button>0</button>
-					<button>C</button>
-				</div>
-			</div>
-		</div>
-        <div class="start-controls">
+            <input type="text" id="button-pad-id" placeholder="User ID">
             <p id="start-title" style="display: none;"></p>
             <p id="start-explanation" style="display: none;"></p>
             <button id="start-button" onclick="startScrollExperience()">Start</button>
@@ -141,7 +117,7 @@
     </div>
 
 	<form
-		action="https://docs.google.com/forms/d/e/1FAIpQLSfWSUgjtIycppwi39wFNjKkwrmylvf7IjTJ11AKJSPeG5yyyQ/formResponse"
+		action="https://docs.google.com/forms/d/e/1FAIpQLSdbMLIHufw6JZxCLeojZ0vaOZE3jHJynKfQrcrmzCkxbAi2XQ/formResponse"
 		target="_self" id="bootstrapForm" method="POST" style="display:none;">
 
 		<input id="device_os" type="text" name="entry.1366025332">
@@ -149,6 +125,8 @@
 		<input id="participant_id" type="text" name="entry.1761654424">
 		<input id="trial_num" type="text" name="entry.1116494097">
 		<input id="time_to_complete" type="text" name="entry.1300493740">
+		<input id="gesture_count" type="text" name="entry.54112039">
+		<input id="session_id" type="text" name="entry.477046101">
 		<input type="hidden" name="fvv" value="1">
 		<input type="hidden" name="fbzx" value="3370711476967520141">
 		<input type="hidden" name="pageHistory" value="0">

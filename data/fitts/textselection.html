@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Text Selection</title>
     <link rel="stylesheet" href="style_dc.css">
     <script type="text/javascript" src="scripts_dc.js"></script>
@@ -73,31 +73,7 @@
 
     <div class="start-screen" id="start-screen">
         <div class="start-controls">
-			<div class="button-pad">
-				<input type="text" id="button-pad-id" placeholder="ID #" disabled>
-				<div class="row">
-					<button>1</button>
-					<button>2</button>
-					<button>3</button>
-				</div>
-				<div class="row">
-					<button>4</button>
-					<button>5</button>
-					<button>6</button>
-				</div>
-				<div class="row">
-					<button>7</button>
-					<button>8</button>
-					<button>9</button>
-				</div>
-				<div class="row">
-					<button class="hidden-button">H</button>
-					<button>0</button>
-					<button>C</button>
-				</div>
-			</div>
-		</div>
-        <div class="start-controls">
+            <input type="text" id="button-pad-id" placeholder="User ID">
             <p id="start-title" style="display: none;"></p>
             <p id="start-explanation" style="width: 20rem;"></p>
             <button id="start-button" onclick="startTextSelectionExperience()">Start</button>
@@ -109,7 +85,7 @@
     </div>
 
 	<form
-		action="https://docs.google.com/forms/d/e/1FAIpQLSdcnO02CsPSzATfByI-09daYpVK7hfVwJtgx-ODPlwN1kZRtg/formResponse"
+		action="https://docs.google.com/forms/d/e/1FAIpQLScA6iwIpK4GIHNoskIV7OzFSacucQL8fviNgdVKMgcGltaNbw/formResponse"
 		target="_self" id="bootstrapForm" method="POST" style="display:none;">
 
 		<input id="device_os" type="text" name="entry.1366025332">
@@ -117,6 +93,8 @@
 		<input id="participant_id" type="text" name="entry.1761654424">
 		<input id="trial_num" type="text" name="entry.1116494097">
 		<input id="time_to_complete" type="text" name="entry.1300493740">
+		<input id="gesture_count" type="text" name="entry.1234127850">
+		<input id="session_id" type="text" name="entry.941328986">
 		<input type="hidden" name="fvv" value="1">
 		<input type="hidden" name="fbzx" value="6933167903009835764">
 		<input type="hidden" name="pageHistory" value="0">
@@ -126,7 +104,7 @@
 
     <script type="text/javascript">
         const EXPERIENCE_NAME = "Text Selection";
-        const EXPLANATION = 'Note: one character of slop is allowed on either side of your selection.';
+        const EXPLANATION = 'Select the highlighted text.';
         setExperienceTitle(EXPERIENCE_NAME, EXPLANATION);
     </script>
 

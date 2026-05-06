@@ -23,6 +23,10 @@ let errorChime;
 let rng;
 let elapsed = 0;
 let trialNum = 1;
+let gestureCount = 0;
+let isGesturing = false;
+let gestureStopTimeout = null;
+let sessionId;
 
 class RandomGenerator {
     constructor(seed) {
@@ -63,6 +67,18 @@ function playChime(success) {
     } else {
         errorChime.play();
     }
+}
+
+function trackGesture(timeout = 200) {
+    if (!isGesturing) {
+        isGesturing = true;
+        gestureCount++;
+        console.log(`[gesture] new gesture #${gestureCount}`);
+    }
+    clearTimeout(gestureStopTimeout);
+    gestureStopTimeout = setTimeout(() => {
+        isGesturing = false;
+    }, timeout);
 }
 
 function checkClick(e, clickMethod) {
@@ -261,8 +277,8 @@ function highlightRandomPhraseScroll() {
 
         let startText = document.getElementById('start-text');
         let elapsedStr = (elapsed / 1000).toFixed(2)
-        startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s\n` + startText.innerText;
-        submitForm(trialNum, elapsedStr);
+        startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
+        submitForm(trialNum, elapsedStr, gestureCount);
         trialNum += 1;
     }
 }
@@ -326,6 +342,7 @@ function showUpDownArrows() {
 }
 
 function onScrollCallback() {
+    trackGesture(100);
     // If the highlight is in the target box, wait and check again. If still in, make a new highlight
     clearTimeout(highlightTimeout);
     showUpDownArrows();
@@ -346,6 +363,7 @@ function onScrollCallback() {
 function startScrollExperience() {
     rng = new RandomGenerator();
     successfulClicks = 0;
+    gestureCount = 0;
     loadChimes();
     document.getElementById('start-screen').style.display = "none";
     document.getElementById('scroll-body').style.display = "";
@@ -369,47 +387,78 @@ function highlightRandomPhraseSelection() {
     while (true) {
         let randomParagraph = paragraphs[Math.floor(rng.random() * paragraphs.length)];
         let paragraphText = randomParagraph.textContent.replace(/\s+/g, ' ').trim();
-        let phrases = paragraphText.split(' ');
-        let wordCount = Math.floor(rng.random() * 3) + 3;
-        let startIndex = Math.floor(rng.random() * (phrases.length - wordCount));
-        let endIndex = startIndex + wordCount;
+        let charCount = Math.floor(rng.random() * 11) + 14; // Select between 10 and 20 characters
+        let startIndex = Math.floor(rng.random() * (paragraphText.length - charCount));
+        let endIndex = startIndex + charCount;
+        let selectedText = paragraphText.slice(startIndex, endIndex);
+
+        // Measure if the highlighted text will fit in a single line!!!
         let highlight = document.createElement('span');
         highlight.classList.add('highlight');
-        highlight.textContent = phrases.slice(startIndex, endIndex).join(' ');
-        let beforeText = phrases.slice(0, startIndex).join(' ');
-        let afterText = phrases.slice(endIndex).join(' ');
+        highlight.textContent = selectedText;
+
+        let beforeText = paragraphText.slice(0, startIndex);
+        let afterText = paragraphText.slice(endIndex);
 
         // Temporarily insert the highlight into the paragraph
-        randomParagraph.innerHTML = beforeText + ' ' + highlight.outerHTML + ' ' + afterText;
+        randomParagraph.innerHTML = beforeText + highlight.outerHTML + afterText;
         // Measure the highlight
         const highlightElement = randomParagraph.querySelector('.highlight');
         const highlightHeight = highlightElement.getBoundingClientRect().height;
         console.log('Highlighting phrase: ' + highlight.textContent);
 
-        if (highlightHeight <= lineHeight)
+        randomParagraph.textContent = paragraphText; // Reset the paragraph
+
+        if (highlightHeight > lineHeight)
         {
-            break;
+            // If it doesn't fit, try again
+            continue
         }
-        else {
-            // If it doesn't fit, reset the paragraph text
-            randomParagraph.textContent = paragraphText;
+
+        // Subtract 2 from the start/end to make sure spaces or linebreaks aren't included in the highlight. These are handled differently across browsers.
+        startIndex += 2
+        endIndex -= 2
+        selectedText = paragraphText.slice(startIndex, endIndex);
+
+
+        // Trim leading and trailing spaces
+        let trimmedText = selectedText.trim();
+        // If trimmed text is too short, try again
+        if (trimmedText.length < 10) {
+            continue;
         }
+
+        // Find the actual position of the trimmed text in the original paragraph
+        let actualStartIndex = paragraphText.indexOf(trimmedText, startIndex - (selectedText.length - trimmedText.length));
+        let actualEndIndex = actualStartIndex + trimmedText.length;
+
+        highlight = document.createElement('span');
+        highlight.classList.add('highlight');
+        highlight.textContent = trimmedText;
+
+        beforeText = paragraphText.slice(0, actualStartIndex);
+        afterText = paragraphText.slice(actualEndIndex);
+
+        // Temporarily insert the highlight into the paragraph
+        randomParagraph.innerHTML = beforeText + highlight.outerHTML + afterText;
+        break;
     }
 }
 
 
 function selectionChangedHandler() {
+    trackGesture();
     const selection = window.getSelection().toString();                    // Get the user's selection
     const highlightedClasses = document.querySelector('.highlight');     // Get the highlighted text
 
     if (highlightedClasses === null)
         return;
 
-    const targetText = highlightedClasses.textContent.slice(1, -1);                 // Remove the first and last character to allow overselection
+    const targetText = highlightedClasses.textContent;                               // Get the full highlighted text without slop
     const indexOfSelection = selection.indexOf(targetText);                          // Check if the user's selection is in the highlighted text
     // console.log(selection.length, targetText.length, indexOfSelection, indexOfSelection + targetText.length);
 
-    if (indexOfSelection >= 0 && indexOfSelection <= 2 && indexOfSelection + targetText.length + 2 >= selection.length) { // Check if the user's selection is the highlighted text
+    if (selection === targetText) { // Check if the user's selection exactly matches the highlighted text
         console.log('User selected the highlighted text! Getting a new phrase.');
         removeHighlight();
         highlightRandomPhraseSelection();
@@ -423,15 +472,29 @@ function selectionChangedHandler() {
             removeHighlight();
 
             document.removeEventListener('mouseup', selectionChangedHandler);
+            document.removeEventListener('touchend', selectionChangedHandler);
+            document.removeEventListener('selectionchange', selectionChangeHandler);
 
             let startText = document.getElementById('start-text');
             let elapsedStr = (elapsed / 1000).toFixed(2)
-            startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s\n` + startText.innerText;
-            submitForm(trialNum, elapsedStr);
+            startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
+            submitForm(trialNum, elapsedStr, gestureCount);
 
             trialNum += 1;
         }
     }
+}
+
+let selectionChangeTimer = null;
+
+function selectionChangeHandler() {
+    // Clear any existing timer to reset the delay
+    clearTimeout(selectionChangeTimer);
+
+    // Set a new timer - only triggers after user stops changing selection for 500ms
+    selectionChangeTimer = setTimeout(() => {
+        selectionChangedHandler();
+    }, 1000); // Wait 1000ms of no selection changes before triggering
 }
 
 
@@ -462,6 +525,7 @@ function removeExcessParagraphs() {
 function startTextSelectionExperience() {
     rng = new RandomGenerator();
     successfulClicks = 0;
+    gestureCount = 0;
     loadChimes();
     document.getElementById('start-screen').style.display = "none";
     document.getElementById('textselection-body').style.display = "";
@@ -469,7 +533,14 @@ function startTextSelectionExperience() {
     removeExcessParagraphs();
     highlightRandomPhraseSelection();
 
+    // Listen for mouse events (desktop/laptop)
     document.addEventListener('mouseup', selectionChangedHandler);
+
+    // Listen for touch events (mobile devices)
+    document.addEventListener('touchend', selectionChangedHandler);
+
+    // Listen for selection change events (mobile drag handles)
+    document.addEventListener('selectionchange', selectionChangeHandler);
 
     startTimer();
 }
@@ -484,7 +555,7 @@ function startTimer() {
 
 		elapsed = timestamp - startTime;
 		document.getElementById('text-top-left').innerText = (elapsed / 1000).toFixed(2);
-		if ((EXPERIENCE_NAME == "Scroll" && successfulClicks >= MAX_SCROLL_TRIALS) || (EXPERIENCE_NAME == "Text Selection" && successfulClicks >= MAX_SELECTION_TRIALS)) {
+		if ((EXPERIENCE_NAME == "Scroll" && successfulClicks >= MAX_SCROLL_TRIALS) || (EXPERIENCE_NAME == "Text Selection" && successfulClicks >= MAX_SELECTION_TRIALS) || (EXPERIENCE_NAME == "Zoom" && typeof MAX_ZOOM_TRIALS !== 'undefined' && successfulClicks >= MAX_ZOOM_TRIALS)) {
 			console.log('stop timer');
 			return;
 		}
@@ -493,7 +564,7 @@ function startTimer() {
 	window.requestAnimationFrame(loop);
 }
 
-function submitForm(trial, ttc) {
+function submitForm(trial, ttc, gestures) {
     const form = document.getElementById('bootstrapForm');
 
     if (!form.dataset.submitHandlerAdded) {
@@ -521,23 +592,35 @@ function submitForm(trial, ttc) {
     document.getElementById('participant_id').value = document.getElementById('button-pad-id').value;
     document.getElementById('trial_num').value = trial;
     document.getElementById('time_to_complete').value = ttc;
+    if (gestures !== undefined) {
+        const gestureInput = document.getElementById('gesture_count');
+        if (gestureInput) gestureInput.value = gestures;
+    }
+    const sessionInput = document.getElementById('session_id');
+    if (sessionInput) sessionInput.value = sessionId;
 
     // Dispatch a synthetic submit event
-    // form.dispatchEvent(new Event('submit', { cancelable: true }));
+    form.dispatchEvent(new Event('submit', { cancelable: true }));
+}
+
+function getUrlParameter(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
 }
 
 function initButtonPad() {
     const participantIdInput = document.getElementById('button-pad-id');
-    const buttons = document.querySelectorAll('.button-pad button');
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            if (button.textContent === 'C') {
-                participantIdInput.value = '';
-            } else if (participantIdInput.value.length < 2) {
-                participantIdInput.value += button.textContent;
-            }
-        });
-    });
+
+    const userIdFromUrl = getUrlParameter('user_id');
+    if (userIdFromUrl) {
+        participantIdInput.value = userIdFromUrl;
+        console.log('Participant ID set from URL parameter: ' + userIdFromUrl);
+    }
+
+    sessionId = getUrlParameter('session_id');
+    if (sessionId) {
+        console.log('Session ID set from URL parameter: ' + sessionId);
+    }
 }
 
 window.addEventListener('load', initButtonPad);

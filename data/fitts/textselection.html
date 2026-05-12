@@ -76,7 +76,8 @@
             <input type="text" id="button-pad-id" placeholder="User ID">
             <p id="start-title" style="display: none;"></p>
             <p id="start-explanation" style="width: 20rem;"></p>
-            <button id="start-button" onclick="startTextSelectionExperience()">Start</button>
+            <button id="start-button" onclick="isPractice = false; startTextSelectionExperience()">Start</button>
+            <button id="practice-button" onclick="isPractice = true; startTextSelectionExperience()">Practice</button>
         </div>
 
 		<div class="start-controls">

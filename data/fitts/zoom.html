@@ -29,7 +29,8 @@
             <input type="text" id="button-pad-id" placeholder="User ID">
             <p id="start-title" style="display: none;"></p>
             <p id="start-explanation" style="display: none;"></p>
-            <button id="start-button" onclick="startZoomExperience()">Start</button>
+            <button id="start-button" onclick="isPractice = false; startZoomExperience()">Start</button>
+            <button id="practice-button" onclick="isPractice = true; startZoomExperience()">Practice</button>
         </div>
 
         <div class="start-controls">

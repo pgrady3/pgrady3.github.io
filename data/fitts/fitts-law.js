@@ -43,6 +43,7 @@ let lastMousePosition = { x: null, y: null };
 
 let conditionId;
 let conditionValue;
+let isPractice = false;
 
 // Session ID read from URL parameter
 let sessionId;
@@ -555,9 +556,10 @@ function endExperience() {
 	let te = fittsTest.targetEntries;
 	let tcd = fittsTest.totalCursorDistance.toFixed(1);
 
-	startText.innerText = `#${trialNum} C:${currentCondition} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr} CT:${ct} TE:${te} TCD:${tcd}px\n` + startText.innerText;
-
-	submitForm(trialNum, currentCondition, idStr, ideStr, tpStr, elapsedStr, ct, cot, te, tcd);
+	if (!isPractice) {
+		startText.innerText = `#${trialNum} C:${currentCondition} TTC:${elapsedStr}s ID:${idStr} IDe:${ideStr} TP:${tpStr} CT:${ct} TE:${te} TCD:${tcd}px\n` + startText.innerText;
+		submitForm(trialNum, currentCondition, idStr, ideStr, tpStr, elapsedStr, ct, cot, te, tcd);
+	}
 
 	trialNum += 1;
 
@@ -710,4 +712,5 @@ window.testVuplexMessage = testVuplexMessage;
 
 
 window.addEventListener('load', initButtonPad);
-startButton.addEventListener('click', startExperience);
+startButton.addEventListener('click', () => { isPractice = false; startExperience(); });
+document.getElementById('practice-button').addEventListener('click', () => { isPractice = true; startExperience(); });

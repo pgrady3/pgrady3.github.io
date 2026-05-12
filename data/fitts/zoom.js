@@ -163,10 +163,12 @@ function onZoomSuccess() {
         document.getElementById('start-screen').style.display = "";
         document.getElementById('zoom-body').style.display = "none";
 
-        let startText = document.getElementById('start-text');
-        let elapsedStr = (elapsed / 1000).toFixed(2);
-        startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
-        submitForm(trialNum, elapsedStr, gestureCount);
+        if (!isPractice) {
+            let startText = document.getElementById('start-text');
+            let elapsedStr = (elapsed / 1000).toFixed(2);
+            startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
+            submitForm(trialNum, elapsedStr, gestureCount);
+        }
         trialNum += 1;
     } else {
         generateZoomTarget();

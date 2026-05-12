@@ -27,6 +27,7 @@ let gestureCount = 0;
 let isGesturing = false;
 let gestureStopTimeout = null;
 let sessionId;
+let isPractice = false;
 
 class RandomGenerator {
     constructor(seed) {
@@ -275,10 +276,12 @@ function highlightRandomPhraseScroll() {
 
         document.getElementById('scroll-body').removeEventListener('scroll', onScrollCallback);
 
-        let startText = document.getElementById('start-text');
-        let elapsedStr = (elapsed / 1000).toFixed(2)
-        startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
-        submitForm(trialNum, elapsedStr, gestureCount);
+        if (!isPractice) {
+            let startText = document.getElementById('start-text');
+            let elapsedStr = (elapsed / 1000).toFixed(2)
+            startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
+            submitForm(trialNum, elapsedStr, gestureCount);
+        }
         trialNum += 1;
     }
 }
@@ -475,10 +478,12 @@ function selectionChangedHandler() {
             document.removeEventListener('touchend', selectionChangedHandler);
             document.removeEventListener('selectionchange', selectionChangeHandler);
 
-            let startText = document.getElementById('start-text');
-            let elapsedStr = (elapsed / 1000).toFixed(2)
-            startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
-            submitForm(trialNum, elapsedStr, gestureCount);
+            if (!isPractice) {
+                let startText = document.getElementById('start-text');
+                let elapsedStr = (elapsed / 1000).toFixed(2)
+                startText.innerText = `#${trialNum}, TTC: ${elapsedStr}s, Gestures: ${gestureCount}\n` + startText.innerText;
+                submitForm(trialNum, elapsedStr, gestureCount);
+            }
 
             trialNum += 1;
         }
